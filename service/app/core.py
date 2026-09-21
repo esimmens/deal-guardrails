@@ -310,6 +310,14 @@ def record_decision(cur: Cursor, event: ApprovalEvent, settings: Settings, *, ac
     designated = list(deal["gate_employee_ids"] or [])
     if approver["id"] not in designated and gate_role not in roles_of(cur, approver["id"]):
         raise ApprovalError(403, "not_gate_role", f"{approver['full_name']} does not hold {gate_role} for this deal")
+    cur.execute("""SELECT a.decided_at, a.decision::text AS decision, e.full_name FROM approvals a
+                   JOIN employees e ON e.id = a.approver_employee_id WHERE a.deal_id = %s AND a.role = %s""",
+                (deal["id"], gate_role))
+    prior = cur.fetchone()
+    if prior:  # a second click, by anyone, is an answer rather than an error
+        return {"recorded": False, "reason": "already_recorded", "deal_id": deal["deal_ref"],
+                "by": prior["full_name"], "at": prior["decided_at"].isoformat(), "decision": prior["decision"],
+                "status": deal["status"]}
     try:
         new_status = apply_transition(deal["status"], event.decision)
     except InvalidTransition:
@@ -324,12 +332,8 @@ def record_decision(cur: Cursor, event: ApprovalEvent, settings: Settings, *, ac
     except CheckViolation as exc:  # the trigger disagreed with us; that is the point of having it
         raise ApprovalError(403, "db_guard_refused", str(exc).splitlines()[0]) from None
     row = cur.fetchone()
-    if row is None:
-        cur.execute("""SELECT a.decided_at, e.full_name FROM approvals a JOIN employees e ON e.id = a.approver_employee_id
-                       WHERE a.deal_id = %s AND a.role = %s""", (deal["id"], gate_role))
-        prior = cur.fetchone()
-        return {"recorded": False, "reason": "already_recorded", "deal_id": deal["deal_ref"],
-                "by": prior["full_name"], "at": prior["decided_at"].isoformat(), "status": deal["status"]}
+    if row is None:  # lost a race with a concurrent click; the row lock makes this nearly impossible
+        raise ApprovalError(409, "already_recorded", "decision was recorded concurrently")
 
     cur.execute("UPDATE deals SET status = %s, decided_at = %s WHERE id = %s", (new_status, now, deal["id"]))
     audit.append(cur, deal_id=deal["id"], event_type="approval.recorded", actor=actor, occurred_at=now, payload={

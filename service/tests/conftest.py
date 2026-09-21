@@ -78,6 +78,10 @@ def database():
 
 @pytest.fixture(autouse=True)
 def clean_tables():
+    from service.app import db as _db
+
+    if _db._pool is None:  # the app lifespan closes the pool on TestClient exit; reopen for core tests
+        init_pool(SETTINGS.dsn("service"))
     with _admin("dg_test") as conn:
         conn.execute("TRUNCATE audit_events, notifications, approvals, approval_requirements, request_extractions, "
                      "deal_terms, conversations, deals RESTART IDENTITY CASCADE")

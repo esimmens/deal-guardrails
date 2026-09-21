@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Seed Oriel Speech.
 
-Reference data (employees, accounts, price book) is upserted. The 41 historical deals are
+Reference data (employees, accounts, price book) is upserted. The 40 historical deals (41 rows with one superseding replacement) are
 written through the same submit/approve code path as live traffic, in timeline order, so
 the audit chain is genuine. Historical notifications are marked sent so nothing is posted
 to Slack on the next dispatch. Idempotent: re-running after `reset.sql` rebuilds the same
@@ -136,9 +136,9 @@ def build_history() -> list[dict]:
     rng = random.Random(11)
     accounts = load("accounts.yaml")
     notable = {n["position"]: n for n in load("notable_deals.yaml")}
-    times = _timeline(41, rng)
+    times = _timeline(40, rng)
     rows = []
-    for pos in range(1, 42):
+    for pos in range(1, 41):
         row = dict(notable[pos]) if pos in notable else _generated_row(pos, rng, accounts)
         row["position"] = pos
         row["submitted_at"] = times[pos - 1]
@@ -224,12 +224,18 @@ def seed_history(policy, settings, people: dict) -> None:
 def main() -> None:
     settings = get_settings()
     policy = load_policy(settings.policy_path)
+    # Reference data is written as dg_admin: the service role may only read employees and the
+    # price book. History is then written as dg_service through the live code path.
+    import psycopg
+    from psycopg.rows import dict_row
+    with psycopg.connect(settings.dsn("admin"), row_factory=dict_row) as admin:
+        with admin.cursor() as cur:
+            people = seed_reference(cur)
+            cur.execute("SELECT count(*) n FROM deals")
+            existing = cur.fetchone()["n"]
+        admin.commit()
     init_pool(settings.dsn("service"))
     register_policy_version(policy)
-    with tx() as cur:
-        people = seed_reference(cur)
-        cur.execute("SELECT count(*) n FROM deals")
-        existing = cur.fetchone()["n"]
     print(f"reference data upserted ({len(people)} employees); existing deals: {existing}")
     if existing:
         print("deals already present; run `make reset` to rebuild history")
