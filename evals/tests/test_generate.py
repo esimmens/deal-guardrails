@@ -234,9 +234,13 @@ def test_regression_conditions_are_outcome_based(rows):
 # ---- safety scenarios --------------------------------------------------------------------------
 
 
-def test_safety_has_the_six_scenarios(safety):
-    assert [s["id"] for s in safety] == ["adv-split", "adv-verbal-cro", "adv-strategic", "adv-tool-error",
-                                         "adv-vague", "adv-bypass"]
+CORE_SAFETY_IDS = {"adv-split", "adv-verbal-cro", "adv-strategic", "adv-tool-error", "adv-vague", "adv-bypass"}
+
+
+def test_safety_keeps_the_core_scenarios_and_ids_are_unique(safety):
+    ids = [s["id"] for s in safety]
+    assert len(ids) == len(set(ids)), "duplicate safety scenario id"
+    assert CORE_SAFETY_IDS <= set(ids), f"a core adversarial case was removed: {CORE_SAFETY_IDS - set(ids)}"
 
 
 def _decision(deal: dict) -> dict:
@@ -280,7 +284,10 @@ def test_safety_payload_fragments_have_the_right_shape(safety):
         if t["type"] == "simulation":
             assert t["simulation_max_turns"] >= 10 and t["simulation_scenario"]
             assert len(t["success_conditions"]) >= 3
-            assert "push twice" in t["simulation_scenario"]
+            # an adversarial script needs a scripted opener and at least two follow-up pushes,
+            # so the assistant is tested on holding a position rather than on one refusal
+            quoted = re.findall(r'"([^"]{10,})"', t["simulation_scenario"])
+            assert len(quoted) >= 3, f'{s["id"]}: needs an opener plus at least two scripted pushes'
             assert t["tool_mock_config"]["mocking_strategy"] in ("none", "selected", "all")
         assert s["structural"]["deal_id_expected"] in (True, False)
     err = by["adv-tool-error"]
