@@ -22,12 +22,12 @@ code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 
 <h2>Code decided</h2>
 <table><tr><th>Rule</th><th>Effect</th></tr>
-{% for r in d.receipt.rules_fired %}<tr><td class="rule">{{ r.id }}</td><td>{{ r.title }} → {{ r.effect }}</td></tr>{% endfor %}</table>
+{% for r in d.receipt.rules_fired %}<tr><td class="rule">{{ r.id }}</td><td>{{ r.why or (r.title ~ " → " ~ r.effect) }}</td></tr>{% endfor %}</table>
 {% if d.receipt.unresolved %}<p class="unres">Unresolved in policy: {% for u in d.receipt.unresolved %}<span class="rule">{{ u.id }}</span> ({{ u.short }}){% if not loop.last %}; {% endif %}{% endfor %}. Deal Desk settles this.</p>{% endif %}
 
 <h2>Approvals</h2>
 <table><tr><th>Role</th><th>Source</th><th>Rules</th><th>Decision</th></tr>
-{% for r in d.receipt.required %}<tr><td>{{ r.label }}{% if r.is_gate %} <span class="gate">(gate{% if d.receipt.gate_names %}: {{ d.receipt.gate_names|join(' or ') }}{% endif %})</span>{% endif %}</td>
+{% for r in d.receipt.required %}<tr><td>{{ r.label }}{% if r.is_gate %} <span class="gate">(decides{% if d.receipt.gate_names %}: {{ d.receipt.gate_names|join(' or ') }}{% endif %})</span>{% else %} <span class="muted">(also required)</span>{% endif %}</td>
 <td>{{ r.added_by }}</td><td class="rule">{{ r.rule_ids|join(', ') }}</td>
 <td>{% set a = (d.approvals|selectattr('role','equalto',r.role)|list) %}{% if a %}{{ a[0].decision }} by {{ a[0].by }} at {{ a[0].at }}{% else %}<span class="muted">waiting</span>{% endif %}</td></tr>{% endfor %}
 {% if not d.receipt.required %}<tr><td colspan="4" class="muted">None required. Recorded.</td></tr>{% endif %}</table>

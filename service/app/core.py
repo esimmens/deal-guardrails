@@ -17,6 +17,7 @@ from policy.schema import TERM_FIELDS, Facts, PaymentTerms, Segment
 from . import audit
 from .approvers import employee_by_slack, gate_holders, roles_of
 from .config import Settings
+from .explain import explain_rule
 from .idempotency import canonical_digest, idempotency_key, normalize_account_name
 from .outbox import enqueue
 from .receipt import SHORT_UNRESOLVED, build_receipt, confirmation_line_for, label, receipt_summary_for
@@ -250,7 +251,11 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
     receipt = build_receipt(
         deal_ref=deal_ref, raw_request_text=payload.raw_request_text, model_read=model_read,
         server_derived=server_derived,
-        rules_fired=[{"id": r["id"], "title": r["title"], "effect": r["effect"]} for r in decision["rules_fired"]],
+        rules_fired=[{"id": r["id"], "title": r["title"], "effect": r["effect"],
+                      "why": explain_rule(r["id"], title=r["title"], discount_percent=payload.discount_percent,
+                                          payment_terms=payload.payment_terms.value, term_months=payload.term_months,
+                                          net_total_cents=net_cents)}
+                     for r in decision["rules_fired"]],
         required=required_rows, gate_role=gate_role, gate_names=[h["full_name"] for h in holders],
         llm_added=llm_added, unresolved=unresolved, flags=flags, policy_version=policy.version,
         receipt_url=f"{settings.public_base_url.rstrip('/')}/deals/{deal_ref}",

@@ -61,37 +61,40 @@ def receipt_summary_for(receipt: dict[str, Any] | None) -> str:
     posted to a shared channel: the commercial terms are the point of the request, and a channel
     would show them to everyone in it and invite the wrong person to click.
     """
-    parts: list[str] = []
     req = receipt["required"]
-    if req:
-        names = []
-        for r in req:
-            tag = " (gate"
-            if r.get("is_gate"):
-                if receipt.get("gate_names"):
-                    tag += ", " + " or ".join(receipt["gate_names"])
-                tag += ")"
-                names.append(f"{label(r['role'])}{tag}")
-            else:
-                names.append(label(r["role"]))
-        parts.append("Approvals required: " + ", ".join(names) + ".")
-    else:
-        parts.append("No approval is required; this is within your own authority and has been recorded.")
-    fired = [r["id"] for r in receipt["rules_fired"]]
-    parts.append("Rules fired: " + (", ".join(fired) if fired else "none") + ".")
-    if receipt["unresolved"]:
-        bits = [f"{u['id']} ({u['short']})" for u in receipt["unresolved"]]
-        parts.append("Unresolved in policy: " + "; ".join(bits) + ". Deal Desk settles this.")
+    whys = [r.get("why") or f"{r.get('title', r['id'])} [{r['id']}]." for r in receipt["rules_fired"]]
+    if not req:
+        why = " ".join(whys) if whys else "Nothing here is outside an AE's own authority."
+        return f"No approval is needed. {why} It has been recorded."
+
+    lines: list[str] = ["Why this needs approval: " + " ".join(whys)]
     if receipt["llm_added"]:
-        parts.append("Added on the assistant's judgment: " + ", ".join(label(r) for r in receipt["llm_added"]) + ".")
-    notable = [f for f in receipt["flags"] if f in ("strategic_claim_unverified", "skip_level", "no_gate_holder")
-               or f.startswith("human_downgrade_blocked")]
-    if notable:
-        parts.append("Flags: " + ", ".join(notable) + ".")
-    if req:
-        who = " or ".join(receipt.get("gate_names") or []) or "the approver"
-        parts.append(f"The approval request has been sent privately to {who}. Nothing is approved yet.")
-    return " ".join(parts)
+        added = ", ".join(label(r) for r in receipt["llm_added"])
+        lines.append(f"The assistant also asked for {added} to review, on its own judgment; policy did not require it.")
+
+    roles = [label(r["role"]) for r in req]
+    gate = label(receipt["gate_role"]) if receipt.get("gate_role") else None
+    names = " or ".join(receipt.get("gate_names") or [])
+    if "no_gate_holder" in receipt["flags"] or not names:
+        who = (f"Who signs off: {_join(roles)}. Nobody currently holds the {gate or 'deciding'} role, so this is "
+               "waiting to be routed. Nothing is approved yet.")
+    elif len(roles) == 1:
+        who = f"Who signs off: {names} ({gate}). The request has gone to {names} privately. Nothing is approved yet."
+    else:
+        who = (f"Who signs off: {_join(roles)}. {gate} ranks highest, so the request has gone to {names} ({gate}) "
+               "to decide. Nothing is approved yet.")
+    lines.append(who)
+
+    other = [f for f in receipt["flags"] if f == "skip_level" or f.startswith("human_downgrade_blocked")]
+    if other:
+        lines.append("Flags for Deal Desk: " + ", ".join(other) + ".")
+    return "\n".join(lines)
+
+
+def _join(items: list[str]) -> str:
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
 
 
 def confirmation_line_for(deal_ref: str, status: str, *, duplicate: bool = False,

@@ -12,8 +12,11 @@ def test_calloway_receipt_names_the_unresolved_rule(policy, settings):
     assert rec["unresolved"][0]["id"] == "R2"
     assert rec["required"] == [{"role": "deal_desk", "label": "Deal Desk", "is_gate": True, "added_by": "policy",
                                 "rule_ids": ["R1b"]}]
-    assert "Unresolved in policy: R2" in r.receipt_summary
-    assert "Deal Desk (gate, Priya Ramaswamy)" in r.receipt_summary
+    # The spoken receipt explains each rule in the deal's own numbers and keeps the id in brackets.
+    assert "A 22% discount is above the 15% an AE can approve alone, so Deal Desk must sign off [R1b]." in r.receipt_summary
+    assert "so Deal Desk has to settle it [R2]." in r.receipt_summary
+    assert "Who signs off: Priya Ramaswamy (Deal Desk)." in r.receipt_summary
+    assert "gate" not in r.receipt_summary and "Rules fired" not in r.receipt_summary
     assert r.confirmation_line == "Submitted as DG-1001."
 
 
