@@ -1,8 +1,8 @@
-# Oriel Speech: Non-Standard Deal Approval Policy, v4.2
+# Oriel Speech: Non-Standard Deal Approval Policy, v4.2.1
 
 Effective: 1 August 2026
 Owner: Deal Desk
-Supersedes: v4.1 (January 2026)
+Supersedes: v4.2 (August 2026)
 Applies to: every negotiated contract for text to speech, speech to text and conversational agent minutes
 Machine-readable form: `policy/pricing_policy.yaml`. The approval system evaluates that file. This document is the reference text and cites the same rule identifiers in square brackets.
 
@@ -66,7 +66,7 @@ Machine-readable form: `policy/pricing_policy.yaml`. The approval system evaluat
 
 ### §3.3 Competitive deals and renewals
 
-3.3.1 Every request states whether the deal is a renewal and whether it is competitive, as defined in §2, and Deal Desk takes both into account when reviewing a request in its band. A competitive claim is supported by the evidence §2 describes. Misstating either fact is a breach of this policy and voids any approval obtained on the strength of it.
+3.3.1 Every request states whether the deal is a renewal and whether it is competitive, as defined in §2. Neither status by itself requires an approval or adds an approver; Deal Desk takes both into account when a request already requires its approval under §3.1. A competitive claim is supported by the evidence §2 describes. Misstating either fact is a breach of this policy and voids any approval obtained on the strength of it.
 
 ### §3.4 Other price concessions
 
@@ -150,6 +150,7 @@ Machine-readable form: `policy/pricing_policy.yaml`. The approval system evaluat
 
 ## §10 Change history
 
+- September 2026, v4.2.1: §3.3.1 clarified after evaluation of the intake assistant showed it reading the sentence as a routing rule. Renewal and competitive status inform Deal Desk's review and never by themselves require an approval. No rule identifiers or thresholds changed.
 - August 2026, v4.2: §2 definitions expanded to cover outcome-based pricing, implementation arrangements and license fee restructuring, with the corresponding approvals at §5.3 to §5.5 [R6, R7, R8]. §7.2 public-sector routing added [R12]. §9 rewritten for the intake assistant: fixed field order, the receipt, and the role keys. §8.2 extended to requesters in any role.
 - March 2026 memo (M-2026-03): Deal Desk ceiling raised from 25 percent to 30 percent for competitive renewals only [R10].
 - January 2026, v4.1: fiscal-year restatement. §4 rewritten: net-30 confirmed as standard; annual and multi-year payment in advance listed as standard. §8.3 and §8.4 added: approvals are recorded by the approver, and a verbal yes is not an approval.
