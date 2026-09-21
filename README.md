@@ -99,8 +99,8 @@ than anything the model emits; Claude Sonnet 5 producing every turn with the bac
 Anthropic prompt caching active. Evaluated so far, one repeat each: 8 of 11 adversarial cases and 13 of
 16 valid regression runs passed both the judge and the database check, with zero under-escalations;
 the failures each traced to a cause that has since been fixed in the policy prose, the prompt, the tool
-schema or the test wording, and those fixes are confirmed by single-conversation canaries but not yet by
-a re-run of the affected scenarios. The night also cost two batches of credits to a free tunnel that
+schema or the test wording, and a re-run of the five affected scenarios on the current version passed
+every structural check. The night also cost two batches of credits to a free tunnel that
 dropped its session and to a header variable the tests did not define; both are recorded in
 `docs/build-log.md`, along with the operating rules that came out of it (`evals/README.md`). Not yet
 touched: the n8n workflows against a live Slack workspace, the held-out set, and repeats.

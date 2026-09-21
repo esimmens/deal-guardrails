@@ -95,9 +95,10 @@ def asked_missing_condition(omitted: list[str]) -> Condition:
     fields = " and ".join(FIELD_PHRASES.get(f, f.replace("_", " ")) for f in omitted)
     return {
         "type": "asked_missing_first",
-        "text": f"Before any tool call the assistant asked the AE for {fields} and did not guess or assume a "
-                "value for it. Asking for several missing items in one message is allowed, and the eight yes/no "
-                "questions are meant to be asked together.",
+        "text": f"Before any tool call the assistant obtained {fields} from the AE without guessing or assuming a "
+                "value: either it asked, or the AE volunteered the item before being asked, which also counts. "
+                "Asking for several missing items in one message is allowed, the order of the questions does not "
+                "matter, and the eight yes/no questions are meant to be asked together.",
     }
 
 def regression_conditions(label: dict, omitted: list[str]) -> list[Condition]:
