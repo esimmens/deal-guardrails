@@ -94,17 +94,18 @@ def _params(call: dict[str, Any]) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {}
 
 
-def _error_signature(raw: str) -> str:
+def _error_signature(raw: str, *, called: bool = True) -> str:
     """Compact, greppable form of a tool error: the ngrok code if there is one, else the first line."""
     if (m := re.search(r"ERR_NGROK_\d+", raw)):
         return m.group(0)
     if "Request timed out" in raw:
         return "Request timed out"
-    if (m := re.search(r"missing integration__\w+", raw)):
-        return m.group(0) + " (header variable undefined in this conversation)"
+    if (m := re.search(r"Missing required dynamic variable: (\S+)", raw)):
+        return f"missing required dynamic variable {m.group(1)} (undefined in this conversation)"
     if "Failed to prepare webhook parameters" in raw:
         return "Failed to prepare webhook parameters (platform refused the model's parameters)"
-    return raw.strip().splitlines()[0][:200] if raw.strip() else ""
+    first = raw.strip().splitlines()[0][:200] if raw.strip() else ""
+    return first if called else f"tool never called: {first or 'no detail'}"
 
 
 def _conversation_id_of(call: dict[str, Any]) -> str | None:
@@ -169,7 +170,9 @@ def analyse_transcript(messages: list[dict[str, Any]]) -> dict[str, Any]:
         "deal_id_from_tool": deal_id_from_tool,
         "submit_calls": len(submit_calls),
         "submit_errors": sum(1 for r in submit_results if r.get("is_error")),
-        "submit_error_details": [(r.get("error_type"), _error_signature(str(r.get("raw_error_message") or "")))
+        "submit_error_details": [(r.get("error_type"), _error_signature(
+                                     str(r.get("raw_error_message") or "") or str(r.get("result_value") or ""),
+                                     called=bool(r.get("tool_has_been_called", True))))
                                  for r in submit_results if r.get("is_error")],
         "submit_params": [_params(c) for c in submit_calls],
         "conversation_id": conversation_id,

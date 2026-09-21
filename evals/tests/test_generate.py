@@ -318,7 +318,7 @@ def test_push_bodies_offline(generated, safety):
     assert body["type"] == "simulation" and body["name"] == f"regression/{reg[0]['id']}"
     assert body["evaluation_model"] == pt.JUDGE_MODEL and body["simulated_user_model"] == pt.SIM_USER_MODEL
     assert body["tool_mock_config"] == {"mocking_strategy": "none"}
-    assert body["dynamic_variables"] == {"integration__slack_user_id": "U_TEST"}
+    assert body["dynamic_variables"] == {"integration__slack_user_id": "U_TEST", "integration__slack_channel_id": "", "integration__slack_thread_ts": ""}
     assert body["parent_folder_id"] == "folder_x" and body["simulation_scenario"] == reg[0]["persona"]
     assert body["success_conditions"] == conditions.texts(
         conditions.regression_conditions(reg[0]["label"], reg[0]["omitted"]))

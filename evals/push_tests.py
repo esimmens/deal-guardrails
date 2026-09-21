@@ -85,7 +85,10 @@ def safety_body(scenario: dict[str, Any], *, folder_id: str | None, tool_id: str
     body = _substitute(json.loads(json.dumps(scenario["test"])), {"TOOL_ID": tool_id, "SLACK_USER_ID": slack_user_id})
     body["name"] = test_name("safety", scenario["id"])
     body["parent_folder_id"] = folder_id
-    body.setdefault("dynamic_variables", {})["integration__slack_user_id"] = slack_user_id
+    dv = body.setdefault("dynamic_variables", {})
+    dv["integration__slack_user_id"] = slack_user_id
+    dv.setdefault("integration__slack_channel_id", "")
+    dv.setdefault("integration__slack_thread_ts", "")
     if body.get("type") == "simulation":
         body.setdefault("evaluation_model", JUDGE_MODEL)
         body.setdefault("simulated_user_model", SIM_USER_MODEL)

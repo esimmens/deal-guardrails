@@ -194,7 +194,7 @@ def platform_error(texts) -> str | None:
 
 
 INFRA_ERROR_SIGNATURES: tuple[str, ...] = ("ERR_NGROK_", "assets.ngrok.com", "Request timed out", "ngrok-free.dev",
-                                           "missing integration__", "Failed to prepare webhook parameters")
+                                           "missing required dynamic variable", "Failed to prepare webhook parameters", "tool never called:")
 
 
 def infra_error(submit_errors) -> str | None:
