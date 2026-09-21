@@ -27,8 +27,10 @@ right person. The receipt shows what the AE wrote, what the model read, and what
 Design decisions worth knowing:
 
 - **The agent cannot narrate its own success.** The workflow's tool node branches on the real
-  HTTP result. The confirmation sentence and the deal id are authored by the server and spoken
-  verbatim by a workflow node the model does not control. The failure branch says nothing was
+  HTTP result. The deal id and the confirmation sentence are authored by the server and handed
+  to the confirmed node as dynamic variables. The workflow API has no node that emits text
+  without a model, so the node is instructed to speak them verbatim and the eval checks the
+  literal string; the id itself cannot be invented because it never passes through the model. The failure branch says nothing was
   recorded, and its retry is the same edge traversed backwards.
 - **Duplicates return 200, never 409.** The idempotency key is the conversation id plus a
   digest of the business facts. A retry after a timeout whose row landed gets "already on file
@@ -90,4 +92,11 @@ Numbers appear in `evals/results/published/` once a full run has been done, not 
 
 ## Status
 
-Under construction. See `docs/` for the case study when it exists.
+As of 2026-09-20, evening. Verified: the policy engine, schema, audit chain, service and seed
+(94 tests); the agent, tool and workflow pushed to ElevenAgents; the full path Slack-shaped
+test -> agent -> tunnel -> service -> Postgres, three times (DG-1042 to DG-1044). Not yet
+verified: the agent on Claude. Every run so far was produced by the platform's default backup
+models because the workspace ran out of credits, which the cascade hid until it was disabled
+and the failure surfaced as a red. The n8n workflows import and parse but have not made a live
+Slack round trip, and the evaluation suite has only run offline. The record of what was found,
+including the mistakes, is `docs/build-log.md`.
