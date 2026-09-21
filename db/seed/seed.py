@@ -31,6 +31,31 @@ HERE = Path(__file__).parent
 SEED_ACTOR = {"type": "system", "id": "seed"}
 
 
+def env_values() -> dict[str, str]:
+    """SLACK_ID_* and friends from the repo's `.env`/`env` file, then the real environment on top.
+
+    The seed runs on the host, where those files are not loaded: docker compose passes them to the
+    containers, not to this process. Reading them here means `make seed` gives the cast their real
+    Slack member ids however it is invoked. Without this the seed silently falls back to the
+    U_MAREN-style placeholders and every live Slack submission fails to recognise its requester.
+    """
+    vals: dict[str, str] = {}
+    try:
+        from dotenv import dotenv_values
+    except ModuleNotFoundError:
+        dotenv_values = None
+    if dotenv_values is not None:
+        for name in (".env", "env"):
+            f = ROOT / name
+            if f.exists():
+                vals.update({k: v for k, v in dotenv_values(f).items() if v})
+    vals.update({k: v for k, v in os.environ.items() if v})
+    return vals
+
+
+ENV = env_values()
+
+
 def load(name: str):
     return yaml.safe_load((HERE / name).read_text())
 
@@ -38,7 +63,7 @@ def load(name: str):
 def seed_reference(cur) -> dict[str, dict]:
     people = {}
     for e in load("employees.yaml"):
-        slack = os.environ.get(e["slack_env"]) or e["slack_placeholder"]
+        slack = ENV.get(e["slack_env"]) or e["slack_placeholder"]
         cur.execute(
             """INSERT INTO employees (full_name, title, email, slack_user_id) VALUES (%s, %s, %s, %s)
                ON CONFLICT (email) DO UPDATE SET full_name = EXCLUDED.full_name, title = EXCLUDED.title,
