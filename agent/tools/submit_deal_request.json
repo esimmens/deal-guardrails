@@ -37,6 +37,18 @@
       "request_headers": {
         "Authorization": {
           "secret_id": "${DG_TOOL_TOKEN_SECRET_ID}"
+        },
+        "X-DG-Conversation-Id": {
+          "variable_name": "system__conversation_id"
+        },
+        "X-DG-Requester-Slack-Id": {
+          "variable_name": "integration__slack_user_id"
+        },
+        "X-DG-Slack-Channel-Id": {
+          "variable_name": "integration__slack_channel_id"
+        },
+        "X-DG-Slack-Thread-Ts": {
+          "variable_name": "integration__slack_thread_ts"
         }
       },
       "response_filter": {
@@ -64,22 +76,6 @@
           "raw_request_text"
         ],
         "properties": {
-          "conversation_id": {
-            "type": "string",
-            "dynamic_variable": "system__conversation_id"
-          },
-          "requester_slack_user_id": {
-            "type": "string",
-            "dynamic_variable": "integration__slack_user_id"
-          },
-          "slack_channel_id": {
-            "type": "string",
-            "dynamic_variable": "integration__slack_channel_id"
-          },
-          "slack_thread_ts": {
-            "type": "string",
-            "dynamic_variable": "integration__slack_thread_ts"
-          },
           "account_name": {
             "type": "string",
             "description": "The customer account name exactly as the AE gave it."

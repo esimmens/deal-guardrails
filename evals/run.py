@@ -103,6 +103,23 @@ def _error_signature(raw: str) -> str:
     return raw.strip().splitlines()[0][:200] if raw.strip() else ""
 
 
+def _conversation_id_of(call: dict[str, Any]) -> str | None:
+    """The conversation id the platform attached to a submit call: the X-DG-Conversation-Id header it
+    filled from system__conversation_id, else the body it built, else (older tools) the model's params."""
+    details = call.get("tool_details") or {}
+    for k, v in (details.get("headers") or {}).items():
+        if k.lower() == "x-dg-conversation-id" and v:
+            return str(v)
+    try:
+        body = json.loads(details.get("body") or "{}")
+        if body.get("conversation_id"):
+            return str(body["conversation_id"])
+    except Exception:  # noqa: BLE001
+        pass
+    cid = _params(call).get("conversation_id")
+    return str(cid) if cid else None
+
+
 def analyse_transcript(messages: list[dict[str, Any]]) -> dict[str, Any]:
     """Everything the structural checks need, read straight off the run's agent_responses."""
     agent_msgs = [m for m in messages if m.get("role") == "agent"]
@@ -125,9 +142,9 @@ def analyse_transcript(messages: list[dict[str, Any]]) -> dict[str, Any]:
     last_meta = (agent_msgs[-1].get("agent_metadata") or {}) if agent_msgs else {}
     conversation_id: str | None = None
     for c in submit_calls:
-        cid = _params(c).get("conversation_id")
+        cid = _conversation_id_of(c)
         if cid:
-            conversation_id = str(cid)
+            conversation_id = cid
             break
     transcript = []
     for m in messages:

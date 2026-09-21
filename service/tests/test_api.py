@@ -47,3 +47,23 @@ def test_get_deal_json_and_html_and_listing(client):
 def test_health_reports_policy_and_audit_head(client):
     h = client.get("/health").json()
     assert h["ok"] and h["policy_version"].startswith("sha256:") and h["audit_head"]["seq"] == 0
+
+
+def test_identity_headers_win_over_anything_in_the_body(client, admin):
+    """The platform fills X-DG-* headers from its own variables; the model never sees those fields.
+    Whatever a body claims about who is asking or which conversation this is, the headers decide."""
+    body = submission().model_dump(mode="json")
+    body["conversation_id"] = "body-claims-this"
+    body["requester_slack_user_id"] = "U_PRIYA"  # the model has no business naming the requester
+    resp = client.post("/deals", json=body, headers={**TOKEN, "X-DG-Conversation-Id": "conv-from-header",
+                                                     "X-DG-Requester-Slack-Id": "U_MAREN",
+                                                     "X-DG-Slack-Channel-Id": "", "X-DG-Slack-Thread-Ts": ""})
+    assert resp.status_code == 200, resp.text
+    row = admin.execute(
+        "SELECT d.conversation_id, e.slack_user_id FROM deals d JOIN employees e ON e.id = d.requester_employee_id "
+        "WHERE d.deal_ref = %s", (resp.json()["deal_id"],)).fetchone()
+    assert row["conversation_id"] == "conv-from-header"
+    assert row["slack_user_id"] == "U_MAREN"
+    # and with no headers at all the body still works, so curl and the older tests keep functioning
+    plain = submission(conversation_id="conv-body-only").model_dump(mode="json")
+    assert client.post("/deals", json=plain, headers=TOKEN).status_code == 200

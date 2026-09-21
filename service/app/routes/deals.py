@@ -36,6 +36,15 @@ def _parse_duration(text: str | None) -> timedelta | None:
 def post_deal(payload: DealSubmission, request: Request, background: BackgroundTasks):
     settings = get_settings()
     policy = request.app.state.policy
+    # Identity and correlation arrive in headers the platform fills from its own variables, never from
+    # the model's output. A header, when present and non-empty, always wins over anything in the body.
+    h = request.headers
+    payload = payload.model_copy(update={
+        "conversation_id": h.get("x-dg-conversation-id") or payload.conversation_id,
+        "requester_slack_user_id": h.get("x-dg-requester-slack-id") or payload.requester_slack_user_id,
+        "slack_channel_id": h.get("x-dg-slack-channel-id") or payload.slack_channel_id,
+        "slack_thread_ts": h.get("x-dg-slack-thread-ts") or payload.slack_thread_ts,
+    })
     actor = {"type": "tool", "id": "elevenagents", "conversation_id": payload.conversation_id}
     try:
         with tx() as cur:
