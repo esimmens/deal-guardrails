@@ -54,7 +54,7 @@
           "first_message": "{{confirmation_line}} {{receipt_summary}}"
         }
       },
-      "additional_prompt": "Your first message in this node must be exactly the following text, with nothing added before or after it: {{confirmation_line}} {{receipt_summary}} After that first message, answer follow-up questions in one or two sentences. The request is on file with id {{deal_id}}. Never say it is approved. Never offer to approve, expedite, or contact approvers yourself."
+      "additional_prompt": "Your first message in this node must be exactly the following text, with nothing added before or after it: {{confirmation_line}} {{receipt_summary}} After that first message, answer follow-up questions in one or two sentences. The request is on file with id {{deal_id}}. Never say it is approved. Never offer to approve, expedite, or contact approvers yourself, and never promise to follow up, check on it, or let the AE know anything later; the approval card and the requester notification are sent by the system."
     },
     "failed_node": {
       "type": "override_agent",
