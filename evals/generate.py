@@ -32,6 +32,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+from evals.el_api import load_env  # noqa: E402
 
 from policy.evaluate import Policy, evaluate, load_policy  # noqa: E402
 from policy.schema import TERM_FIELDS, Facts  # noqa: E402
@@ -466,7 +467,7 @@ def openai_surface_text(deal: dict[str, Any], omitted: list[str], *, model: str,
     """(text, source, rejections). Regenerates on a leak, up to `tries`; falls back to the template."""
     if client is None:
         from openai import OpenAI  # imported here so the module never needs a key
-        client = OpenAI()
+        client = OpenAI(api_key=load_env().get("OPENAI_API_KEY"))
     numbers = deal_numbers(deal)
     rejections: list[str] = []
     for attempt in range(1, tries + 1):
