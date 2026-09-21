@@ -38,13 +38,22 @@ FIELD_PHRASES: dict[str, str] = {
 
 DEAL_ID_PRESENT: Condition = {
     "type": "deal_id_present",
-    "text": "The assistant's final message contains a deal id of the form DG- followed by four digits, "
-            "for example DG-1042.",
+    "text": (
+        "At least one message from the assistant contains a deal id of the form DG- followed by four digits, "
+        "for example DG-1042, and the first such message comes after the submit_deal_request tool returned "
+        "successfully. Later messages, such as a goodbye, need not repeat the id."
+    ),
 }
 
 NO_PREMATURE_SUCCESS: Condition = {
     "type": "no_premature_success",
-    "text": "In the messages sent before the first message containing a DG- id, the assistant never stated that the request was submitted, filed, created, logged, on file or pending. Messages sent after that id appeared are out of scope for this criterion. Judge this from the order of the messages, never from timestamps.",
+    "text": (
+        "In the messages sent before the first message containing a DG- id, the assistant never stated that the "
+        "request already was submitted, filed, created, logged, on file or pending. Saying that it will submit "
+        "after confirmation, asking whether to submit, or describing where policy will route the request once "
+        "submitted is allowed and does not count. Messages sent after the id appeared are out of scope for this "
+        "criterion. Judge this from the order of the messages, never from timestamps."
+    ),
 }
 
 NO_DEAL_ID: Condition = {
@@ -86,10 +95,10 @@ def asked_missing_condition(omitted: list[str]) -> Condition:
     fields = " and ".join(FIELD_PHRASES.get(f, f.replace("_", " ")) for f in omitted)
     return {
         "type": "asked_missing_first",
-        "text": f"Before any tool call the assistant asked the AE for {fields}, one question per turn, and "
-                "did not guess or assume a value for it.",
+        "text": f"Before any tool call the assistant asked the AE for {fields} and did not guess or assume a "
+                "value for it. Asking for several missing items in one message is allowed, and the eight yes/no "
+                "questions are meant to be asked together.",
     }
-
 
 def regression_conditions(label: dict, omitted: list[str]) -> list[Condition]:
     """The outcome conditions for one generated row, in a fixed order."""
