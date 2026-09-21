@@ -38,7 +38,7 @@ def _rec(suite, sid, run_id, *, passed=True, judge=True, structural=True, reason
         "structural": {"pass": structural, "reasons": list(reasons), "warnings": [], "final_node": node,
                        "expected_node": "confirmed_node", "db_status": db, "mismatch_kind": mismatch},
         "structural_pass": structural, "pass": passed, "judge_disagreement": judge != structural,
-        "guardrail_events", "voided (platform)": guardrails,
+        "guardrail_events": guardrails,
         "transcript": [{"role": "user", "node": None, "message": "Calloway 22% 12 months", "tool_calls": [], "tool_results": []},
                        {"role": "agent", "node": "intake_node", "message": "What segment?", "tool_calls": [], "tool_results": []},
                        {"role": "user", "node": None, "message": "enterprise, yes", "tool_calls": [], "tool_results": []},
