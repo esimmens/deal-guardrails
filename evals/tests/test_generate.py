@@ -309,7 +309,7 @@ def test_push_bodies_offline(generated, safety):
     reg = pt.load_scenarios("regression", out)
     body = pt.regression_body(reg[0], suite="regression", folder_id="folder_x", slack_user_id="U_TEST")
     assert body["type"] == "simulation" and body["name"] == f"regression/{reg[0]['id']}"
-    assert body["evaluation_model"] == "gpt-5.4-mini" and body["simulated_user_model"] == "gemini-3.5-flash"
+    assert body["evaluation_model"] == pt.JUDGE_MODEL and body["simulated_user_model"] == pt.SIM_USER_MODEL
     assert body["tool_mock_config"] == {"mocking_strategy": "none"}
     assert body["dynamic_variables"] == {"integration__slack_user_id": "U_TEST"}
     assert body["parent_folder_id"] == "folder_x" and body["simulation_scenario"] == reg[0]["persona"]
