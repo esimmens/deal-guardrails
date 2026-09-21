@@ -1,0 +1,16 @@
+# Factors for the pairwise covering array (plan 6.8). generate.py reads this file in order.
+# Every pair of levels across every pair of factors appears in at least one row.
+#
+# discount_band      which approval band the whole-contract discount lands in
+# stated_unit        the single figure the AE states and what it is (the server does the arithmetic)
+# term_shape         term length, payment terms and whether the AE talks in monthly numbers
+# nonstandard_class  the one non-standard term in play, if any
+# segment            customer segment as the AE states it
+# completeness       how many required scalar fields the first message leaves out
+factors:
+  discount_band: [ae_le15, dd_15_25, contested_25_30, cro_gt30]
+  stated_unit: [list_total, net_total, acv, per_unit_x_volume]
+  term_shape: [12mo_net30, 36mo_annual_prepaid, 24mo_net60, monthly_12mo]
+  nonstandard_class: [none, tfc, legal, outcome_based, implementation, license_restructure, strategic_claim]
+  segment: [smb, mid_market, enterprise, public_sector]
+  completeness: [complete, missing_1, missing_2]

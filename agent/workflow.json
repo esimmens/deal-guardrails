@@ -43,7 +43,7 @@
     "confirmed_node": {
       "type": "override_agent",
       "label": "Confirmed",
-      "entry_behavior": "auto",
+      "entry_behavior": "wait_for_user",
       "position": {
         "x": -220,
         "y": 420
@@ -59,7 +59,7 @@
     "failed_node": {
       "type": "override_agent",
       "label": "Submission failed",
-      "entry_behavior": "auto",
+      "entry_behavior": "wait_for_user",
       "position": {
         "x": 220,
         "y": 420
