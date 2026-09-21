@@ -1,0 +1,1826 @@
+[
+  {
+    "id": "row-01",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "list_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "none",
+      "segment": "smb",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 96000,
+      "net_total_usd": 85440.0,
+      "acv_usd": 85440.0,
+      "discount_percent": 11,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": false
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 96000.0,
+      "stated_amount_text": "$96,000 at list for the whole contract",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority"
+      ],
+      "matched_rule_ids": [
+        "R1a"
+      ],
+      "gate_role": null,
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Hi, I need approval on Orchard Lane Retail, SMB. They are at $96,000 at list for the whole contract and I want to go to 11% off list over 12 months, net-30. It is a straight renewal, no competitor in the mix.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Hi, I need approval on Orchard Lane Retail, SMB. They are at $96,000 at list for the whole contract and I want to go to 11% off list over 12 months, net-30. It is a straight renewal, no competitor in the mix.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: $96,000 at list for the whole contract. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($96,000 for the whole contract), confirm it.\n- discount: 11 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-02",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "net_total",
+      "term_shape": "36mo_annual_prepaid",
+      "nonstandard_class": "tfc",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Cardinal Peak Studios",
+      "segment": "mid_market",
+      "list_total_usd": 72000,
+      "net_total_usd": 57600.0,
+      "acv_usd": 19200.0,
+      "discount_percent": 20,
+      "term_months": 36,
+      "payment_terms": "annual_prepaid",
+      "terms": {
+        "termination_for_convenience": true,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 57600.0,
+      "stated_amount_text": "$57,600 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R2"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R2",
+        "R5"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Hi, I need approval on Cardinal Peak Studios, mid-market. They are at $57,600 net over the full term, after the discount and I want to go to 20% off list on a 36-month term, paid annually in advance. One wrinkle, they are asking for termination for convenience. Renewal, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Hi, I need approval on Cardinal Peak Studios, mid-market. They are at $57,600 net over the full term, after the discount and I want to go to 20% off list on a 36-month term, paid annually in advance. One wrinkle, they are asking for termination for convenience. Renewal, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Cardinal Peak Studios; segment: mid-market\n- the figure you have: $57,600 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($72,000 for the whole contract), confirm it.\n- discount: 20 percent off list\n- term: 36 months\n- payment terms: annual prepaid\n- the eight yes/no questions: termination for convenience: yes; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Sonant is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-03",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "acv",
+      "term_shape": "24mo_net60",
+      "nonstandard_class": "legal",
+      "segment": "enterprise",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Brightwater Health",
+      "segment": "enterprise",
+      "list_total_usd": 480000,
+      "net_total_usd": 345600.0,
+      "acv_usd": 172800.0,
+      "discount_percent": 28,
+      "term_months": 24,
+      "payment_terms": "net_60",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": true,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": false
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 172800.0,
+      "stated_amount_text": "an annual value of $172,800 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R3",
+        "R4",
+        "R10"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Brightwater Health, enterprise. I want to offer 28% off list on a 24-month term, net-60 terms, on an annual value of $172,800 after the discount. They want to sign on their own paper for the MSA. Renewal, nobody else is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Brightwater Health, enterprise. I want to offer 28% off list on a 24-month term, net-60 terms, on an annual value of $172,800 after the discount. They want to sign on their own paper for the MSA. Renewal, nobody else is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Brightwater Health; segment: enterprise\n- the figure you have: an annual value of $172,800 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($480,000 for the whole contract), confirm it.\n- discount: 28 percent off list\n- term: 24 months\n- payment terms: net-60\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: yes; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-04",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "monthly_12mo",
+      "nonstandard_class": "outcome_based",
+      "segment": "public_sector",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Meridian Transit Authority",
+      "segment": "public_sector",
+      "list_total_usd": 360000,
+      "net_total_usd": 223200.0,
+      "acv_usd": 223200.0,
+      "discount_percent": 38,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": true,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 30000.0,
+      "stated_amount_text": "375,000 agent minutes a month at $0.08 a minute list",
+      "monthly": true,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 375000,
+        "per_month": true
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "cro",
+        "legal",
+        "finance",
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1c",
+        "R6",
+        "R12"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Meridian Transit Authority, public sector. I want to offer a 38 percent discount for 12 months, net-30, on 375,000 agent minutes a month at $0.08 a minute list. They want a chunk of the fee contingent on hitting a containment milestone. Renewal, and Sonant is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Meridian Transit Authority, public sector. I want to offer a 38 percent discount for 12 months, net-30, on 375,000 agent minutes a month at $0.08 a minute list. They want a chunk of the fee contingent on hitting a containment milestone. Renewal, and Sonant is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Meridian Transit Authority; segment: public sector\n- the figure you have: 375,000 agent minutes a month at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($360,000 for the whole contract), confirm it.\n- discount: 38 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: yes; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-05",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "acv",
+      "term_shape": "36mo_annual_prepaid",
+      "nonstandard_class": "implementation",
+      "segment": "smb",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Hollis & Vane",
+      "segment": "smb",
+      "list_total_usd": 432000,
+      "net_total_usd": 267840.0,
+      "acv_usd": 89280.0,
+      "discount_percent": 38,
+      "term_months": 36,
+      "payment_terms": "annual_prepaid",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": true,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": false
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 89280.0,
+      "stated_amount_text": "an annual value of $89,280 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "segment"
+    ],
+    "label": {
+      "required": [
+        "cro",
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R2"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1c",
+        "R2",
+        "R7"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Hollis & Vane, an annual value of $89,280 after the discount, asking for 38% off list on a 36-month term, paid annually in advance. Onboarding and integration work is bundled in at no charge. It is a straight renewal, no competitor in the mix.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Hollis & Vane, an annual value of $89,280 after the discount, asking for 38% off list on a 36-month term, paid annually in advance. Onboarding and integration work is bundled in at no charge. It is a straight renewal, no competitor in the mix.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Hollis & Vane; segment: SMB\n- the figure you have: an annual value of $89,280 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($432,000 for the whole contract), confirm it.\n- discount: 38 percent off list\n- term: 36 months\n- payment terms: annual prepaid\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: yes; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-06",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "net_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "license_restructure",
+      "segment": "public_sector",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Meridian Transit Authority",
+      "segment": "public_sector",
+      "list_total_usd": 48000,
+      "net_total_usd": 35040.0,
+      "acv_usd": 35040.0,
+      "discount_percent": 27,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 35040.0,
+      "stated_amount_text": "$35,040 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "payment_terms"
+    ],
+    "label": {
+      "required": [
+        "legal",
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R8",
+        "R10",
+        "R12"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Meridian Transit Authority, public sector, $35,040 net over the full term, after the discount, asking for 27% off list on a 12-month term. They want the platform fee folded into the per-minute rate. Net new, nobody else is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Meridian Transit Authority, public sector, $35,040 net over the full term, after the discount, asking for 27% off list on a 12-month term. They want the platform fee folded into the per-minute rate. Net new, nobody else is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Meridian Transit Authority; segment: public sector\n- the figure you have: $35,040 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($48,000 for the whole contract), confirm it.\n- discount: 27 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-07",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "list_total",
+      "term_shape": "monthly_12mo",
+      "nonstandard_class": "strategic_claim",
+      "segment": "enterprise",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Fennimore Bank",
+      "segment": "enterprise",
+      "list_total_usd": 96000,
+      "net_total_usd": 72000.0,
+      "acv_usd": 72000.0,
+      "discount_percent": 25,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": true,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 8000.0,
+      "stated_amount_text": "$8,000 a month at list",
+      "monthly": true,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "term_months"
+    ],
+    "label": {
+      "required": [
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [
+        "strategic_claim_unverified"
+      ],
+      "matched_rule_ids": [
+        "R1b",
+        "R9"
+      ],
+      "gate_role": "deal_desk",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Fennimore Bank, enterprise, $8,000 a month at list, asking for 25% off list, net-30. This is a strategic account for us. It is a competitive renewal, Sonant is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Fennimore Bank, enterprise, $8,000 a month at list, asking for 25% off list, net-30. This is a strategic account for us. It is a competitive renewal, Sonant is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Fennimore Bank; segment: enterprise\n- the figure you have: $8,000 a month at list. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($96,000 for the whole contract), confirm it.\n- discount: 25 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: yes; renewal: yes; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-08",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "24mo_net60",
+      "nonstandard_class": "strategic_claim",
+      "segment": "mid_market",
+      "completeness": "missing_2"
+    },
+    "deal": {
+      "account_name": "Larkspur Media",
+      "segment": "mid_market",
+      "list_total_usd": 720000,
+      "net_total_usd": 669600.0,
+      "acv_usd": 334800.0,
+      "discount_percent": 7,
+      "term_months": 24,
+      "payment_terms": "net_60",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": true,
+        "is_renewal": false,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 720000.0,
+      "stated_amount_text": "9,000,000 agent minutes over the term at $0.08 a minute list",
+      "monthly": false,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 9000000,
+        "per_month": false
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "term_months",
+      "segment"
+    ],
+    "label": {
+      "required": [
+        "finance"
+      ],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority",
+        "strategic_claim_unverified"
+      ],
+      "matched_rule_ids": [
+        "R1a",
+        "R3",
+        "R9"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Larkspur Media. I want to offer 7% off, net-60 terms, on 9,000,000 agent minutes over the term at $0.08 a minute list. Flagging that this is a strategic logo. This is new business and Veloq has a quote in.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Larkspur Media. I want to offer 7% off, net-60 terms, on 9,000,000 agent minutes over the term at $0.08 a minute list. Flagging that this is a strategic logo. This is new business and Veloq has a quote in.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Larkspur Media; segment: mid-market\n- the figure you have: 9,000,000 agent minutes over the term at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($720,000 for the whole contract), confirm it.\n- discount: 7 percent off list\n- term: 24 months\n- payment terms: net-60\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: yes; renewal: no; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-09",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "acv",
+      "term_shape": "monthly_12mo",
+      "nonstandard_class": "license_restructure",
+      "segment": "mid_market",
+      "completeness": "missing_2"
+    },
+    "deal": {
+      "account_name": "Tamsin Logistics",
+      "segment": "mid_market",
+      "list_total_usd": 96000,
+      "net_total_usd": 81600.0,
+      "acv_usd": 81600.0,
+      "discount_percent": 15,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": true
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 6800.0,
+      "stated_amount_text": "$6,800 a month net, so $81,600 for the year after the discount",
+      "monthly": true,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "payment_terms",
+      "segment"
+    ],
+    "label": {
+      "required": [
+        "finance"
+      ],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority"
+      ],
+      "matched_rule_ids": [
+        "R1a",
+        "R8"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Tamsin Logistics. I want to offer a 15 percent discount for 12 months, on $6,800 a month net, so $81,600 for the year after the discount. They want the platform fee folded into the per-minute rate. New logo, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Tamsin Logistics. I want to offer a 15 percent discount for 12 months, on $6,800 a month net, so $81,600 for the year after the discount. They want the platform fee folded into the per-minute rate. New logo, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Tamsin Logistics; segment: mid-market\n- the figure you have: $6,800 a month net, so $81,600 for the year after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($96,000 for the whole contract), confirm it.\n- discount: 15 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: no; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-10",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "implementation",
+      "segment": "enterprise",
+      "completeness": "missing_2"
+    },
+    "deal": {
+      "account_name": "Vantage Point Insurance",
+      "segment": "enterprise",
+      "list_total_usd": 72000,
+      "net_total_usd": 58320.0,
+      "acv_usd": 58320.0,
+      "discount_percent": 19,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": true,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 72000.0,
+      "stated_amount_text": "900,000 agent minutes over the term at $0.08 a minute list",
+      "monthly": false,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 900000,
+        "per_month": false
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "payment_terms",
+      "segment"
+    ],
+    "label": {
+      "required": [
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R7"
+      ],
+      "gate_role": "product",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Vantage Point Insurance, 900,000 agent minutes over the term at $0.08 a minute list, asking for 19% off list over 12 months. We would bundle the implementation work into the deal. Renewal, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Vantage Point Insurance, 900,000 agent minutes over the term at $0.08 a minute list, asking for 19% off list over 12 months. We would bundle the implementation work into the deal. Renewal, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Vantage Point Insurance; segment: enterprise\n- the figure you have: 900,000 agent minutes over the term at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($72,000 for the whole contract), confirm it.\n- discount: 19 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: yes; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-13",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "net_total",
+      "term_shape": "36mo_annual_prepaid",
+      "nonstandard_class": "legal",
+      "segment": "public_sector",
+      "completeness": "missing_2"
+    },
+    "deal": {
+      "account_name": "Meridian Transit Authority",
+      "segment": "public_sector",
+      "list_total_usd": 600000,
+      "net_total_usd": 516000.0,
+      "acv_usd": 172000.0,
+      "discount_percent": 14,
+      "term_months": 36,
+      "payment_terms": "annual_prepaid",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": true,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 516000.0,
+      "stated_amount_text": "$516,000 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "term_months",
+      "payment_terms"
+    ],
+    "label": {
+      "required": [
+        "legal"
+      ],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority"
+      ],
+      "matched_rule_ids": [
+        "R1a",
+        "R4",
+        "R12"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Meridian Transit Authority, public sector, $516,000 net over the full term, after the discount, asking for 14% off list. They want to sign on their own paper for the MSA. It is a competitive renewal, Cadenza AI is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Meridian Transit Authority, public sector, $516,000 net over the full term, after the discount, asking for 14% off list. They want to sign on their own paper for the MSA. It is a competitive renewal, Cadenza AI is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Meridian Transit Authority; segment: public sector\n- the figure you have: $516,000 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($600,000 for the whole contract), confirm it.\n- discount: 14 percent off list\n- term: 36 months\n- payment terms: annual prepaid\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: yes; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-14",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "acv",
+      "term_shape": "24mo_net60",
+      "nonstandard_class": "outcome_based",
+      "segment": "smb",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 240000,
+      "net_total_usd": 194400.0,
+      "acv_usd": 97200.0,
+      "discount_percent": 19,
+      "term_months": 24,
+      "payment_terms": "net_60",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": true,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 97200.0,
+      "stated_amount_text": "an annual value of $97,200 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "term_months"
+    ],
+    "label": {
+      "required": [
+        "finance",
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R3",
+        "R6"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Orchard Lane Retail, SMB, an annual value of $97,200 after the discount, asking for a 19 percent discount, net-60 terms. They want a chunk of the fee contingent on hitting a containment milestone. Renewal, and Cadenza AI is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Orchard Lane Retail, SMB, an annual value of $97,200 after the discount, asking for a 19 percent discount, net-60 terms. They want a chunk of the fee contingent on hitting a containment milestone. Renewal, and Cadenza AI is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: an annual value of $97,200 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($240,000 for the whole contract), confirm it.\n- discount: 19 percent off list\n- term: 24 months\n- payment terms: net-60\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: yes; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-15",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "list_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "tfc",
+      "segment": "mid_market",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Larkspur Media",
+      "segment": "mid_market",
+      "list_total_usd": 180000,
+      "net_total_usd": 111600.0,
+      "acv_usd": 111600.0,
+      "discount_percent": 38,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": true,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": false
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 180000.0,
+      "stated_amount_text": "$180,000 at list for the whole contract",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "payment_terms"
+    ],
+    "label": {
+      "required": [
+        "cro",
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1c",
+        "R5"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Larkspur Media, mid-market. I want to offer a 38 percent discount on a 12-month term, on $180,000 at list for the whole contract. They want a termination for convenience clause. It is a straight renewal, no competitor in the mix.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Larkspur Media, mid-market. I want to offer a 38 percent discount on a 12-month term, on $180,000 at list for the whole contract. They want a termination for convenience clause. It is a straight renewal, no competitor in the mix.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Larkspur Media; segment: mid-market\n- the figure you have: $180,000 at list for the whole contract. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($180,000 for the whole contract), confirm it.\n- discount: 38 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: yes; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-16",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "monthly_12mo",
+      "nonstandard_class": "tfc",
+      "segment": "smb",
+      "completeness": "missing_2"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 600000,
+      "net_total_usd": 438000.0,
+      "acv_usd": 438000.0,
+      "discount_percent": 27,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": true,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 50000.0,
+      "stated_amount_text": "625,000 agent minutes a month at $0.08 a minute list",
+      "monthly": true,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 625000,
+        "per_month": true
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "term_months",
+      "payment_terms"
+    ],
+    "label": {
+      "required": [
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R5",
+        "R10"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Orchard Lane Retail, SMB, 625,000 agent minutes a month at $0.08 a minute list, asking for a 27 percent discount. One wrinkle, they are asking for termination for convenience. This is new business and Veloq has a quote in.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Orchard Lane Retail, SMB, 625,000 agent minutes a month at $0.08 a minute list, asking for a 27 percent discount. One wrinkle, they are asking for termination for convenience. This is new business and Veloq has a quote in.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: 625,000 agent minutes a month at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($600,000 for the whole contract), confirm it.\n- discount: 27 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: yes; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: no; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-18",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "list_total",
+      "term_shape": "24mo_net60",
+      "nonstandard_class": "license_restructure",
+      "segment": "public_sector",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Meridian Transit Authority",
+      "segment": "public_sector",
+      "list_total_usd": 144000,
+      "net_total_usd": 120960.0,
+      "acv_usd": 60480.0,
+      "discount_percent": 16,
+      "term_months": 24,
+      "payment_terms": "net_60",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 144000.0,
+      "stated_amount_text": "$144,000 at list for the whole contract",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R3",
+        "R8",
+        "R12"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Meridian Transit Authority, public sector, $144,000 at list for the whole contract, asking for 16% off list on a 24-month term, net-60 terms. They want the platform fee folded into the per-minute rate. It is a competitive renewal, Veloq is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Meridian Transit Authority, public sector, $144,000 at list for the whole contract, asking for 16% off list on a 24-month term, net-60 terms. They want the platform fee folded into the per-minute rate. It is a competitive renewal, Veloq is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Meridian Transit Authority; segment: public sector\n- the figure you have: $144,000 at list for the whole contract. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($144,000 for the whole contract), confirm it.\n- discount: 16 percent off list\n- term: 24 months\n- payment terms: net-60\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: yes; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-22",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "net_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "legal",
+      "segment": "smb",
+      "completeness": "missing_1"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 864000,
+      "net_total_usd": 475200.0,
+      "acv_usd": 475200.0,
+      "discount_percent": 45,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": true,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": true
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 475200.0,
+      "stated_amount_text": "$475,200 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [
+      "segment"
+    ],
+    "label": {
+      "required": [
+        "cro",
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1c",
+        "R4"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Hi, I need approval on Orchard Lane Retail. They are at $475,200 net over the full term, after the discount and I want to go to a 45 percent discount over 12 months, net-30. They want to sign on their own paper for the MSA. This is new business and Veloq has a quote in.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Hi, I need approval on Orchard Lane Retail. They are at $475,200 net over the full term, after the discount and I want to go to a 45 percent discount over 12 months, net-30. They want to sign on their own paper for the MSA. This is new business and Veloq has a quote in.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: $475,200 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($864,000 for the whole contract), confirm it.\n- discount: 45 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: yes; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: no; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-23",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "net_total",
+      "term_shape": "24mo_net60",
+      "nonstandard_class": "tfc",
+      "segment": "public_sector",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Meridian Transit Authority",
+      "segment": "public_sector",
+      "list_total_usd": 432000,
+      "net_total_usd": 406080.0,
+      "acv_usd": 203040.0,
+      "discount_percent": 6,
+      "term_months": 24,
+      "payment_terms": "net_60",
+      "terms": {
+        "termination_for_convenience": true,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 406080.0,
+      "stated_amount_text": "$406,080 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority"
+      ],
+      "matched_rule_ids": [
+        "R1a",
+        "R3",
+        "R5",
+        "R12"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Hi, I need approval on Meridian Transit Authority, public sector. They are at $406,080 net over the full term, after the discount and I want to go to 6% off list over 24 months, net-60 terms. They want a termination for convenience clause. Net new, nobody else is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Hi, I need approval on Meridian Transit Authority, public sector. They are at $406,080 net over the full term, after the discount and I want to go to 6% off list over 24 months, net-60 terms. They want a termination for convenience clause. Net new, nobody else is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Meridian Transit Authority; segment: public sector\n- the figure you have: $406,080 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($432,000 for the whole contract), confirm it.\n- discount: 6 percent off list\n- term: 24 months\n- payment terms: net-60\n- the eight yes/no questions: termination for convenience: yes; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-24",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "net_total",
+      "term_shape": "36mo_annual_prepaid",
+      "nonstandard_class": "strategic_claim",
+      "segment": "smb",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 180000,
+      "net_total_usd": 99000.0,
+      "acv_usd": 33000.0,
+      "discount_percent": 45,
+      "term_months": 36,
+      "payment_terms": "annual_prepaid",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": true,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 99000.0,
+      "stated_amount_text": "$99,000 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "cro",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R2"
+      ],
+      "flags": [
+        "strategic_claim_unverified"
+      ],
+      "matched_rule_ids": [
+        "R1c",
+        "R2",
+        "R9"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Need a non-standard approval for Orchard Lane Retail, SMB. The number is $99,000 net over the full term, after the discount and they want 45% off over 36 months, paid annually in advance. This is a strategic account for us. Net new, nobody else is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Need a non-standard approval for Orchard Lane Retail, SMB. The number is $99,000 net over the full term, after the discount and they want 45% off over 36 months, paid annually in advance. This is a strategic account for us. Net new, nobody else is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: $99,000 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($180,000 for the whole contract), confirm it.\n- discount: 45 percent off list\n- term: 36 months\n- payment terms: annual prepaid\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: yes; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-25",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "acv",
+      "term_shape": "36mo_annual_prepaid",
+      "nonstandard_class": "license_restructure",
+      "segment": "smb",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Orchard Lane Retail",
+      "segment": "smb",
+      "list_total_usd": 480000,
+      "net_total_usd": 336000.0,
+      "acv_usd": 112000.0,
+      "discount_percent": 30,
+      "term_months": 36,
+      "payment_terms": "annual_prepaid",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 112000.0,
+      "stated_amount_text": "an annual value of $112,000 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R2",
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R2",
+        "R8",
+        "R10"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Orchard Lane Retail, SMB. I want to offer a 30 percent discount over 36 months, paid annually in advance, on an annual value of $112,000 after the discount. They want the platform fee folded into the per-minute rate. New logo, no competitor in play.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Orchard Lane Retail, SMB. I want to offer a 30 percent discount over 36 months, paid annually in advance, on an annual value of $112,000 after the discount. They want the platform fee folded into the per-minute rate. New logo, no competitor in play.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Orchard Lane Retail; segment: SMB\n- the figure you have: an annual value of $112,000 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($480,000 for the whole contract), confirm it.\n- discount: 30 percent off list\n- term: 36 months\n- payment terms: annual prepaid\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-27",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "acv",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "none",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Tamsin Logistics",
+      "segment": "mid_market",
+      "list_total_usd": 600000,
+      "net_total_usd": 474000.0,
+      "acv_usd": 474000.0,
+      "discount_percent": 21,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 474000.0,
+      "stated_amount_text": "an annual value of $474,000 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b"
+      ],
+      "gate_role": "deal_desk",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Tamsin Logistics, mid-market, an annual value of $474,000 after the discount, asking for 21% off list on a 12-month term, net-30. Renewal, and Sonant is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Tamsin Logistics, mid-market, an annual value of $474,000 after the discount, asking for 21% off list on a 12-month term, net-30. Renewal, and Sonant is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Tamsin Logistics; segment: mid-market\n- the figure you have: an annual value of $474,000 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($600,000 for the whole contract), confirm it.\n- discount: 21 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-28",
+    "factors": {
+      "discount_band": "ae_le15",
+      "stated_unit": "list_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "outcome_based",
+      "segment": "enterprise",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Calloway Group",
+      "segment": "enterprise",
+      "list_total_usd": 72000,
+      "net_total_usd": 64080.0,
+      "acv_usd": 64080.0,
+      "discount_percent": 11,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": true,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 72000.0,
+      "stated_amount_text": "$72,000 at list for the whole contract",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "finance",
+        "product"
+      ],
+      "unresolved": [],
+      "flags": [
+        "within_ae_authority"
+      ],
+      "matched_rule_ids": [
+        "R1a",
+        "R6"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Need a non-standard approval for Calloway Group, enterprise. The number is $72,000 at list for the whole contract and they want 11% off over 12 months, net-30. They want a chunk of the fee contingent on hitting a containment milestone. Net new, nobody else is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Need a non-standard approval for Calloway Group, enterprise. The number is $72,000 at list for the whole contract and they want 11% off over 12 months, net-30. They want a chunk of the fee contingent on hitting a containment milestone. Net new, nobody else is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Calloway Group; segment: enterprise\n- the figure you have: $72,000 at list for the whole contract. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($72,000 for the whole contract), confirm it.\n- discount: 11 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: yes; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-29",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "list_total",
+      "term_shape": "monthly_12mo",
+      "nonstandard_class": "legal",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Larkspur Media",
+      "segment": "mid_market",
+      "list_total_usd": 864000,
+      "net_total_usd": 639360.0,
+      "acv_usd": 639360.0,
+      "discount_percent": 26,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": true,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": false
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 72000.0,
+      "stated_amount_text": "$72,000 a month at list",
+      "monthly": true,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R4",
+        "R10"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Larkspur Media, mid-market. I want to offer a 26 percent discount for 12 months, net-30, on $72,000 a month at list. On the legal side they are asking to change the indemnity cap. It is a straight renewal, no competitor in the mix.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Larkspur Media, mid-market. I want to offer a 26 percent discount for 12 months, net-30, on $72,000 a month at list. On the legal side they are asking to change the indemnity cap. It is a straight renewal, no competitor in the mix.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Larkspur Media; segment: mid-market\n- the figure you have: $72,000 a month at list. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($864,000 for the whole contract), confirm it.\n- discount: 26 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: yes; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-30",
+    "factors": {
+      "discount_band": "contested_25_30",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "license_restructure",
+      "segment": "enterprise",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Calloway Group",
+      "segment": "enterprise",
+      "list_total_usd": 432000,
+      "net_total_usd": 311040.0,
+      "acv_usd": 311040.0,
+      "discount_percent": 28,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 432000.0,
+      "stated_amount_text": "5,400,000 agent minutes over the term at $0.08 a minute list",
+      "monthly": false,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 5400000,
+        "per_month": false
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [
+        "R10"
+      ],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R8",
+        "R10"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Calloway Group, enterprise, 5,400,000 agent minutes over the term at $0.08 a minute list, asking for 28% off list over 12 months, net-30. They want the platform fee folded into the per-minute rate. New logo, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Calloway Group, enterprise, 5,400,000 agent minutes over the term at $0.08 a minute list, asking for 28% off list over 12 months, net-30. They want the platform fee folded into the per-minute rate. New logo, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Calloway Group; segment: enterprise\n- the figure you have: 5,400,000 agent minutes over the term at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($432,000 for the whole contract), confirm it.\n- discount: 28 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: no; competitive: yes (Cadenza AI is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-32",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "net_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "outcome_based",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Cardinal Peak Studios",
+      "segment": "mid_market",
+      "list_total_usd": 120000,
+      "net_total_usd": 94800.0,
+      "acv_usd": 94800.0,
+      "discount_percent": 21,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": true,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 94800.0,
+      "stated_amount_text": "$94,800 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "finance",
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R6"
+      ],
+      "gate_role": "finance",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Cardinal Peak Studios, mid-market. I want to offer 21% off over 12 months, net-30, on $94,800 net over the full term, after the discount. Part of the fee would be tied to their containment rate once they go live. Renewal, and Cadenza AI is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Cardinal Peak Studios, mid-market. I want to offer 21% off over 12 months, net-30, on $94,800 net over the full term, after the discount. Part of the fee would be tied to their containment rate once they go live. Renewal, and Cadenza AI is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Cardinal Peak Studios; segment: mid-market\n- the figure you have: $94,800 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($120,000 for the whole contract), confirm it.\n- discount: 21 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: yes; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Sonant is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-33",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "acv",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "tfc",
+      "segment": "enterprise",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Brightwater Health",
+      "segment": "enterprise",
+      "list_total_usd": 864000,
+      "net_total_usd": 725760.0,
+      "acv_usd": 725760.0,
+      "discount_percent": 16,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": true,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "acv",
+      "value_basis": "acv",
+      "stated_amount_usd": 725760.0,
+      "stated_amount_text": "an annual value of $725,760 after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R5"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Quick one on Brightwater Health, enterprise. I want to offer 16% off list over 12 months, net-30, on an annual value of $725,760 after the discount. They want a termination for convenience clause. It is a competitive renewal, Veloq is bidding.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Quick one on Brightwater Health, enterprise. I want to offer 16% off list over 12 months, net-30, on an annual value of $725,760 after the discount. They want a termination for convenience clause. It is a competitive renewal, Veloq is bidding.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Brightwater Health; segment: enterprise\n- the figure you have: an annual value of $725,760 after the discount. That is the annual value after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($864,000 for the whole contract), confirm it.\n- discount: 16 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: yes; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Sonant is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-34",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "list_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "implementation",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Tamsin Logistics",
+      "segment": "mid_market",
+      "list_total_usd": 720000,
+      "net_total_usd": 568800.0,
+      "acv_usd": 568800.0,
+      "discount_percent": 21,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": true,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "list_total",
+      "value_basis": "list_total",
+      "stated_amount_usd": 720000.0,
+      "stated_amount_text": "$720,000 at list for the whole contract",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "product",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R7"
+      ],
+      "gate_role": "product",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Can you route a request for me? Tamsin Logistics, mid-market, $720,000 at list for the whole contract, asking for a 21 percent discount over 12 months, net-30. We would bundle the implementation work into the deal. Renewal, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Can you route a request for me? Tamsin Logistics, mid-market, $720,000 at list for the whole contract, asking for a 21 percent discount over 12 months, net-30. We would bundle the implementation work into the deal. Renewal, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Tamsin Logistics; segment: mid-market\n- the figure you have: $720,000 at list for the whole contract. That is the list price for the whole contract before any discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($720,000 for the whole contract), confirm it.\n- discount: 21 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: yes; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-35",
+    "factors": {
+      "discount_band": "dd_15_25",
+      "stated_unit": "per_unit_x_volume",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "legal",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Tamsin Logistics",
+      "segment": "mid_market",
+      "list_total_usd": 180000,
+      "net_total_usd": 151200.0,
+      "acv_usd": 151200.0,
+      "discount_percent": 16,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": true,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": false,
+        "claims_strategic_account": false,
+        "is_renewal": true,
+        "is_competitive": true
+      },
+      "stated_unit": "per_unit_x_volume",
+      "value_basis": "per_unit",
+      "stated_amount_usd": 180000.0,
+      "stated_amount_text": "2,250,000 agent minutes over the term at $0.08 a minute list",
+      "monthly": false,
+      "per_unit": {
+        "sku": "agent_minute",
+        "unit_price_usd": 0.08,
+        "volume": 2250000,
+        "per_month": false
+      },
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "legal",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1b",
+        "R4"
+      ],
+      "gate_role": "legal",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Need a non-standard approval for Tamsin Logistics, mid-market. The number is 2,250,000 agent minutes over the term at $0.08 a minute list and they want 16% off on a 12-month term, net-30. On the legal side they are asking to change the indemnity cap. Renewal, and Veloq is in the running.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Need a non-standard approval for Tamsin Logistics, mid-market. The number is 2,250,000 agent minutes over the term at $0.08 a minute list and they want 16% off on a 12-month term, net-30. On the legal side they are asking to change the indemnity cap. Renewal, and Veloq is in the running.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Tamsin Logistics; segment: mid-market\n- the figure you have: 2,250,000 agent minutes over the term at $0.08 a minute list. That is a per-minute list price times the committed volume, which you have not multiplied out. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($180,000 for the whole contract), confirm it.\n- discount: 16 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: yes; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: no; claiming strategic-account status: no; renewal: yes; competitive: yes (Veloq is the competitor)\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  },
+  {
+    "id": "row-36",
+    "factors": {
+      "discount_band": "cro_gt30",
+      "stated_unit": "net_total",
+      "term_shape": "12mo_net30",
+      "nonstandard_class": "license_restructure",
+      "segment": "mid_market",
+      "completeness": "complete"
+    },
+    "deal": {
+      "account_name": "Tamsin Logistics",
+      "segment": "mid_market",
+      "list_total_usd": 432000,
+      "net_total_usd": 298080.0,
+      "acv_usd": 298080.0,
+      "discount_percent": 31,
+      "term_months": 12,
+      "payment_terms": "net_30",
+      "terms": {
+        "termination_for_convenience": false,
+        "nonstandard_legal_terms": false,
+        "outcome_based_pricing": false,
+        "implementation_arrangement": false,
+        "license_fee_restructure": true,
+        "claims_strategic_account": false,
+        "is_renewal": false,
+        "is_competitive": false
+      },
+      "stated_unit": "net_total",
+      "value_basis": "net_total",
+      "stated_amount_usd": 298080.0,
+      "stated_amount_text": "$298,080 net over the full term, after the discount",
+      "monthly": false,
+      "per_unit": null,
+      "requester": {
+        "name": "Maren Holloway",
+        "title": "Enterprise Account Executive",
+        "email": "maren.holloway@orielspeech.example",
+        "slack_placeholder": "U_MAREN"
+      }
+    },
+    "omitted": [],
+    "label": {
+      "required": [
+        "cro",
+        "finance",
+        "deal_desk"
+      ],
+      "unresolved": [],
+      "flags": [],
+      "matched_rule_ids": [
+        "R1c",
+        "R8"
+      ],
+      "gate_role": "cro",
+      "policy_version": "sha256:cf44ebb0bf9ec72bf8df3daee3c81e635a4ac8582dbfcaea2e3e9d6c35d3fcbf"
+    },
+    "surface_text": "Hi, I need approval on Tamsin Logistics, mid-market. They are at $298,080 net over the full term, after the discount and I want to go to 31% off on a 12-month term, net-30. We are moving the platform fee into usage instead of a separate line. New logo, no competitor in play.",
+    "surface_source": "template",
+    "persona": "You are Maren Holloway, Enterprise Account Executive at Oriel Speech, messaging the Deal Desk intake assistant in Slack about a real deal.\nSend this exact opening message first: \"Hi, I need approval on Tamsin Logistics, mid-market. They are at $298,080 net over the full term, after the discount and I want to go to 31% off on a 12-month term, net-30. We are moving the platform fee into usage instead of a separate line. New logo, no competitor in play.\"\nFacts about the deal, to share only when the assistant asks for them, in plain conversational language:\n- account: Tamsin Logistics; segment: mid-market\n- the figure you have: $298,080 net over the full term, after the discount. That is the total the customer pays over the whole term after the discount. If asked for a different figure, say you only have this one plus the discount and let the assistant work it out; if it works out the list total correctly ($432,000 for the whole contract), confirm it.\n- discount: 31 percent off list\n- term: 12 months\n- payment terms: net-30\n- the eight yes/no questions: termination for convenience: no; non-standard legal terms: no; outcome-based pricing: no; implementation arrangement: no; license fee restructuring: yes; claiming strategic-account status: no; renewal: no; competitive: no\nWhen the assistant restates the deal and every fact matches, reply with a plain yes. If a fact is wrong, correct only that fact.\nDo not ask the assistant to approve, expedite or skip anyone, and do not claim anyone has approved anything. Keep each reply to one or two sentences. Stop once the assistant reports a deal id, or after 10 replies."
+  }
+]
