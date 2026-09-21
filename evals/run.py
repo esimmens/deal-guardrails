@@ -33,7 +33,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from evals.el_api import ElevenLabsTests, invocation_complete  # noqa: E402
-from evals.el_api import platform_error  # noqa: E402
+from evals.el_api import infra_error, platform_error  # noqa: E402
 from evals.push_tests import (  # noqa: E402
     JUDGE_MODEL,
     SIM_USER_MODEL,
@@ -94,6 +94,15 @@ def _params(call: dict[str, Any]) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {}
 
 
+def _error_signature(raw: str) -> str:
+    """Compact, greppable form of a tool error: the ngrok code if there is one, else the first line."""
+    if (m := re.search(r"ERR_NGROK_\d+", raw)):
+        return m.group(0)
+    if "Request timed out" in raw:
+        return "Request timed out"
+    return raw.strip().splitlines()[0][:200] if raw.strip() else ""
+
+
 def analyse_transcript(messages: list[dict[str, Any]]) -> dict[str, Any]:
     """Everything the structural checks need, read straight off the run's agent_responses."""
     agent_msgs = [m for m in messages if m.get("role") == "agent"]
@@ -139,6 +148,8 @@ def analyse_transcript(messages: list[dict[str, Any]]) -> dict[str, Any]:
         "deal_id_from_tool": deal_id_from_tool,
         "submit_calls": len(submit_calls),
         "submit_errors": sum(1 for r in submit_results if r.get("is_error")),
+        "submit_error_details": [(r.get("error_type"), _error_signature(str(r.get("raw_error_message") or "")))
+                                 for r in submit_results if r.get("is_error")],
         "submit_params": [_params(c) for c in submit_calls],
         "conversation_id": conversation_id,
         "guardrail_events": sum(len(m.get("triggered_guardrails") or []) for m in messages),
@@ -356,11 +367,13 @@ def normalise_run(run: dict[str, Any], *, suite: str, variant: str, scenario_id:
         texts = list(scenario["test"].get("success_conditions") or [])
     conds = [{"idx": i, "type": (types[i] if i < len(types) else "unknown"), "text": t} for i, t in enumerate(texts)]
     voided = platform_error(rationale)
-    passed = None if voided else (bool(judge_pass) and structural["pass"])
+    infra = None if voided else infra_error(analysis.get("submit_error_details"))
+    passed = None if (voided or infra) else (bool(judge_pass) and structural["pass"])
     if voided:
         judge_pass = None
     return {
         "voided_reason": voided,
+        "infra_reason": infra,
         "run_id": run.get("test_run_id"),
         "invocation_id": run.get("test_invocation_id"),
         "suite": suite,
@@ -368,7 +381,7 @@ def normalise_run(run: dict[str, Any], *, suite: str, variant: str, scenario_id:
         "scenario_id": scenario_id,
         "test_id": run.get("test_id"),
         "test_name": run.get("test_name"),
-        "status": "voided" if voided else run.get("status"),
+        "status": "voided" if voided else ("infra_error" if infra else run.get("status")),
         "version_id": run.get("version_id"),
         "judge_result": judge_result,
         "judge_pass": judge_pass,
@@ -377,7 +390,7 @@ def normalise_run(run: dict[str, Any], *, suite: str, variant: str, scenario_id:
         "structural": structural,
         "structural_pass": structural["pass"],
         "pass": passed,
-        "judge_disagreement": (judge_pass is not None) and (bool(judge_pass) != structural["pass"]),
+        "judge_disagreement": (judge_pass is not None) and not (voided or infra) and (bool(judge_pass) != structural["pass"]),
         "guardrail_events": analysis["guardrail_events"],
         "transcript": analysis["transcript"],
     }
@@ -446,7 +459,59 @@ def spike_scenarios(api: ElevenLabsTests) -> tuple[list[dict[str, Any]], dict[st
     return [{"id": t["name"]} for t in tests], {t["name"]: t["id"] for t in tests}
 
 
+def reanalyse(args: argparse.Namespace) -> int:
+    """Rebuild runs.jsonl for a finished results dir using the current structural checks and voiding
+    rules. Reads the saved suite_<suite>_<variant>.json payloads; calls the platform only to resolve
+    spike test names. Spends no credits."""
+    results_dir = Path(args.reanalyse)
+    meta = json.loads((results_dir / "meta.json").read_text())
+    test_ids = load_test_ids(TEST_IDS_PATH)["tests"]
+    db_conn, db_status = (None, "skipped (--skip-db)") if args.skip_db else connect_db()
+    print(f"postgres: {db_status}")
+    records: list[dict[str, Any]] = []
+    files = sorted(p for p in results_dir.glob("suite_*_*.json") if not re.search(r"_b\d+\.json$", p.name))
+    with ElevenLabsTests() as api:
+        for p in files:
+            m = re.match(r"suite_(.+)_(baseline|ablation)\.json$", p.name)
+            if not m:
+                continue
+            suite, variant = m.group(1), m.group(2)
+            inv = json.loads(p.read_text())
+            if suite == "spike":
+                scenarios, ids_by_name = spike_scenarios(api)
+                lookup = {s["id"]: ids_by_name[s["id"]] for s in scenarios}
+            else:
+                scenarios = load_scenarios(suite)
+                lookup = {s["id"]: test_ids.get(s["id"]) for s in scenarios}
+            by_test = {tid: sid for sid, tid in lookup.items()}
+            scen_by_id = {s["id"]: s for s in scenarios}
+            counts = {"pass": 0, "voided": 0, "infra_error": 0, "n": 0}
+            for r in inv.get("test_runs") or []:
+                sid = by_test.get(r.get("test_id")) or str(r.get("test_name") or "").split("/")[-1]
+                scen = scen_by_id.get(sid) or {"id": sid, "structural": {}, "label": {"required": [], "unresolved": []},
+                                               "deal": {"discount_percent": 0}, "omitted": []}
+                rec = normalise_run(r, suite=suite, variant=variant, scenario_id=sid, scenario=scen,
+                                    db_conn=db_conn, db_status=db_status)
+                records.append(rec)
+                counts["n"] += 1
+                counts["pass"] += bool(rec["pass"])
+                counts["voided"] += rec.get("status") == "voided"
+                counts["infra_error"] += rec.get("status") == "infra_error"
+            print(f"[{suite}/{variant}] re-scored {counts['n']}: {counts['pass']} pass, {counts['voided']} voided, {counts['infra_error']} infra errors")
+    with (results_dir / "runs.jsonl").open("w") as fh:
+        for rec in records:
+            fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    meta["reanalysed_at"] = datetime.now(UTC).isoformat(timespec="seconds")
+    (results_dir / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+    if db_conn is not None:
+        db_conn.close()
+    print(f"rewrote {results_dir / 'runs.jsonl'} ({len(records)} runs)")
+    return 0
+
+
 def run(args: argparse.Namespace) -> int:
+    if getattr(args, "reanalyse", None):
+        return reanalyse(args)
     suites = ["regression", "safety", "heldout"] if args.suite == "all" else [args.suite]
     if "heldout" in suites:
         check_heldout_hash()
@@ -487,21 +552,41 @@ def run(args: argparse.Namespace) -> int:
                 if missing:
                     raise SystemExit(f"{suite}: no test id for {missing[:5]}; run push_tests.py first")
                 lookup = {s["id"]: test_ids[s["id"]] for s in scenarios}
+            if getattr(args, "only", None):
+                keep = {x.strip() for x in args.only.split(",") if x.strip()}
+                scenarios = [s for s in scenarios if s["id"] in keep]
+                lookup = {k: v for k, v in lookup.items() if k in keep}
             if not scenarios:
                 print(f"[{suite}/{variant}] no scenarios, skipping")
                 continue
-            print(f"[{suite}/{variant}] {len(scenarios)} tests x {repeat} repeats", flush=True)
-            inv = api.run_tests(agent_id, list(lookup.values()), repeat_count=repeat,
-                                agent_config_override=override, branch_id=branch)
-            inv = wait_for(api, inv["id"], poll_seconds=args.poll_seconds, timeout_minutes=args.timeout_minutes)
+            batch = max(1, int(getattr(args, "batch_size", 6) or 6))
+            items = list(lookup.values())
+            n_batches = -(-len(items) // batch)
+            print(f"[{suite}/{variant}] {len(scenarios)} tests x {repeat} repeats, in {n_batches} batch(es) of up to {batch}", flush=True)
+            all_runs: list[dict[str, Any]] = []
+            inv_ids: list[str] = []
+            inv_version = None
+            for b in range(n_batches):
+                chunk = items[b * batch:(b + 1) * batch]
+                inv_b = api.run_tests(agent_id, chunk, repeat_count=repeat,
+                                      agent_config_override=override, branch_id=branch)
+                inv_b = wait_for(api, inv_b["id"], poll_seconds=args.poll_seconds, timeout_minutes=args.timeout_minutes)
+                (results_dir / f"suite_{suite}_{variant}_b{b:02d}.json").write_text(json.dumps(inv_b, indent=2) + "\n")
+                all_runs.extend(inv_b.get("test_runs") or [])
+                inv_ids.append(inv_b["id"])
+                inv_version = inv_b.get("version_id") or inv_version
+                print(f"  batch {b + 1}/{n_batches}: {len(chunk)} tests finished", flush=True)
+            inv = {"id": inv_ids[0] if len(inv_ids) == 1 else inv_ids, "invocation_ids": inv_ids,
+                   "version_id": inv_version, "test_runs": all_runs}
             (results_dir / f"suite_{suite}_{variant}.json").write_text(json.dumps(inv, indent=2) + "\n")
-            meta["version_id"] = inv.get("version_id") or meta["version_id"]
-            meta["suites"][f"{suite}/{variant}"] = {"invocation_id": inv["id"], "repeat_count": repeat,
-                                                   "tests": len(lookup), "runs": len(inv.get("test_runs") or [])}
+            meta["version_id"] = inv_version or meta["version_id"]
+            meta["suites"][f"{suite}/{variant}"] = {"invocation_ids": inv_ids, "repeat_count": repeat, "batch_size": batch,
+                                                   "tests": len(lookup), "runs": len(all_runs)}
             by_test = {tid: sid for sid, tid in lookup.items()}
             scen_by_id = {s["id"]: s for s in scenarios}
             passed = 0
             voided_n = 0
+            infra_n = 0
             for r in inv.get("test_runs") or []:
                 sid = by_test.get(r.get("test_id")) or str(r.get("test_name") or "").split("/")[-1]
                 scen = scen_by_id.get(sid) or {"id": sid, "structural": {}, "label": {"required": [], "unresolved": []},
@@ -511,8 +596,9 @@ def run(args: argparse.Namespace) -> int:
                 records.append(rec)
                 passed += bool(rec["pass"])
                 voided_n += rec.get("status") == "voided"
+                infra_n += rec.get("status") == "infra_error"
             n = len(inv.get("test_runs") or [])
-            print(f"[{suite}/{variant}] {passed}/{n} pass (judge AND structural); {voided_n} voided by platform error")
+            print(f"[{suite}/{variant}] {passed}/{n} pass (judge AND structural); {voided_n} voided by platform error; {infra_n} infra errors (tunnel)")
     with (results_dir / "runs.jsonl").open("w") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
@@ -543,6 +629,11 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--poll-seconds", type=float, default=15.0)
     ap.add_argument("--timeout-minutes", type=float, default=90.0)
     ap.add_argument("--seed", type=int, default=11, help="sampling seed for --export-calibration")
+    ap.add_argument("--batch-size", type=int, default=6,
+                    help="tests per platform invocation; smaller batches spare the tunnel and the laptop (default 6)")
+    ap.add_argument("--only", default=None, help="comma-separated scenario ids to run, e.g. row-06,row-13")
+    ap.add_argument("--reanalyse", default=None, metavar="RESULTS_DIR",
+                    help="re-score a finished results dir from its saved invocation payloads with the current checks; spends nothing")
     ap.add_argument("--refresh-ablation-prompt", action="store_true",
                     help="rewrite evals/ablation_prompt.md from agent/prompt.md and exit")
     args = ap.parse_args(argv)

@@ -69,7 +69,8 @@ def summarise(runs: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]
     stats: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for (folder, variant), rs in groups.items():
         voided = [r for r in rs if r.get("status") == "voided" or platform_error(r.get("judge_rationale") or [])]
-        rs = [r for r in rs if r not in voided]
+        infra = [r for r in rs if r not in voided and (r.get("status") == "infra_error" or r.get("infra_reason"))]
+        rs = [r for r in rs if r not in voided and r not in infra]
         n = len(rs)
         k = sum(1 for r in rs if r.get("pass"))
         per: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -93,6 +94,8 @@ def summarise(runs: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]
             "over_escalation": sum(1 for r in rs if (r.get("structural") or {}).get("mismatch_kind") == "over_escalation"),
             "per_scenario": scen, "worst": worst_id,
             "voided": len(voided),
+            "infra": len(infra),
+            "infra_reasons": sorted({str(r.get("infra_reason") or "infra error")[:60] for r in infra}),
             "voided_reasons": sorted({(r.get("voided_reason") or platform_error(r.get("judge_rationale") or []) or "platform error")[:60] for r in voided}),
         }
     return stats
@@ -148,12 +151,13 @@ def render_report(runs: list[dict[str, Any]], meta: dict[str, Any], kappa: dict[
         ("- pass = judge success AND structural pass (expected final node, DG- id, Postgres row whose "
         "approval_requirements equal the label as a set). guardrail_events are counted and never folded into pass."),
         *([f"- **voided runs: {sum(v.get('voided', 0) for f in stats.values() for v in f.values())}**, platform errors such as {', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('voided_reasons', [])}))}; excluded from every count and rate below"] if any(v.get("voided") for f in stats.values() for v in f.values()) else []),
+        *([f"- **infra errors: {sum(v.get('infra', 0) for f in stats.values() for v in f.values())}**, real submit calls that died in the test harness's own tunnel ({', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('infra_reasons', [])}))}); they say nothing about the agent and are excluded from every count and rate below"] if any(v.get("infra") for f in stats.values() for v in f.values()) else []),
         "",
         "## Per folder",
         "",
     ]
-    header = "| folder | scenarios | runs | pass | pass rate | Wilson 95% LB | flaky scenarios | judge disagreements | guardrail_events | voided (platform) |"
-    sep = "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+    header = "| folder | scenarios | runs | pass | pass rate | Wilson 95% LB | flaky scenarios | judge disagreements | guardrail_events | voided (platform) | infra errors (tunnel) |"
+    sep = "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
     if has_ablation:
         header += " ablation pass rate (LB) |"
         sep += "---:|"
@@ -163,7 +167,7 @@ def render_report(runs: list[dict[str, Any]], meta: dict[str, Any], kappa: dict[
         if b is None:
             continue
         row = (f"| {f} | {b['scenarios']} | {b['runs']} | {b['pass']} | {_pct(b['rate'])} | {b['lb']:.3f} | "
-               f"{b['flaky']} | {b['judge_disagreements']} | {b['guardrail_events']} | {b['voided']} |")
+               f"{b['flaky']} | {b['judge_disagreements']} | {b['guardrail_events']} | {b['voided']} | {b['infra']} |")
         if has_ablation:
             a = stats[f].get("ablation")
             row += (f" {_pct(a['rate'])} ({a['lb']:.3f}, n={a['runs']}) |" if a else " n/a |")

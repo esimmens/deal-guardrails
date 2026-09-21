@@ -191,3 +191,22 @@ def platform_error(texts) -> str | None:
             if p in low:
                 return str(t)[:160]
     return None
+
+
+INFRA_ERROR_SIGNATURES: tuple[str, ...] = ("ERR_NGROK_", "assets.ngrok.com", "Request timed out", "ngrok-free.dev")
+
+
+def infra_error(submit_errors) -> str | None:
+    """A failure of OUR test infrastructure (the tunnel, a gateway timeout) on a real submit call, as
+    opposed to a mocked failure the scenario asked for. Such runs say nothing about the agent and are
+    reported as infra errors, outside every rate. `submit_errors` is a list of (error_type, raw_message)."""
+    import re
+    for etype, raw in submit_errors or []:
+        raw = str(raw or "")
+        for sig in INFRA_ERROR_SIGNATURES:
+            if sig in raw:
+                code = re.search(r"ERR_NGROK_\d+", raw)
+                return (code.group(0) + " (tunnel endpoint offline)" if code and code.group(0).endswith("3200")
+                        else code.group(0) + " (tunnel gateway error)" if code
+                        else f"{etype or 'error'}: {raw[:80]}")
+    return None
