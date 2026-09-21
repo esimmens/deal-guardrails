@@ -6,8 +6,8 @@ service decides, n8n displays and relays.
 
 | File | Purpose |
 | --- | --- |
-| `deal-card.workflow.json` | Two entry points. `POST /webhook/deal-card` turns an `approval_card` notification into a Slack card with Approve and Decline buttons, waits for the click, signs it, and reports it to `POST /events/approval`. `POST /webhook/notify` relays `requester_dm` and `thread_update` notifications. |
-| `reminder-sweep.workflow.json` | Every 5 minutes: `POST /notifications/dispatch` (drains the outbox), then `GET /deals?status=pending_approval&older_than=PT4H` and direct-messages a "Still waiting" line to the holder of each deal's gate role. |
+| `deal-card.workflow.json` | Two entry points. `POST /webhook/deal-card` turns an `approval_card` notification into a Slack card with Approve and Decline buttons, waits for the click, signs it, and reports it to `POST /events/approval`. `POST /webhook/notify` relays `requester_dm` notifications, posted from the intake bot so the decision lands in the conversation the AE submitted in. |
+| `reminder-sweep.workflow.json` | Hourly: `POST /notifications/dispatch` (drains the outbox), then `GET /deals?status=pending_approval&older_than=PT4H` and direct-messages a "Still waiting" line to the holder of each deal's gate role. |
 
 Node type versions used (all are the defaults n8n 2.39.8 creates in the editor): Webhook 2.1, Code 2,
 Slack 2.7, If 2.3, Switch 3.4, HTTP Request 4.5, Schedule Trigger 1.4, Split Out 1.
@@ -15,7 +15,7 @@ Slack 2.7, If 2.3, Switch 3.4, HTTP Request 4.5, Schedule Trigger 1.4, Split Out
 ## 1. Compose changes (required)
 
 Add two lines to the `n8n` service `environment:` block in `docker-compose.yml`, then recreate the container
-(`docker compose --env-file env up -d n8n`):
+(`docker compose up -d n8n`):
 
 ```yaml
       NODE_FUNCTION_ALLOW_BUILTIN: "crypto"
@@ -45,8 +45,8 @@ editor and was not used here because the task specified the Code node.
 The repo's `n8n/` directory is mounted read-only at `/n8n` inside the container:
 
 ```sh
-docker compose --env-file env exec -T n8n n8n import:workflow --input=/n8n/deal-card.workflow.json
-docker compose --env-file env exec -T n8n n8n import:workflow --input=/n8n/reminder-sweep.workflow.json
+docker compose exec -T n8n n8n import:workflow --input=/n8n/deal-card.workflow.json
+docker compose exec -T n8n n8n import:workflow --input=/n8n/reminder-sweep.workflow.json
 ```
 
 Both files carry fixed workflow ids (`DGdealcard000001`, `DGremindersweep1`), so re-importing after an edit
@@ -80,7 +80,7 @@ uv run python n8n/credentials.py
 
 ```sh
 uv run python n8n/import.py
-docker compose --env-file env restart n8n   # n8n asks for this after a CLI import
+docker compose restart n8n   # n8n asks for this after a CLI import
 ```
 
 The workflow JSON in this repo deliberately references the credential by **name** only, so the files
@@ -95,8 +95,8 @@ equivalent is `n8n publish:workflow --id=<id>`, not the deprecated `update:workf
 
 No part of this system posts to a Slack channel. The approval card goes to the person who holds the
 gate role, the outcome and the 7-day timeout notice go back into that same direct message, the
-requester is told separately by direct message, and the reminder sweep nudges the gate holder
-privately.
+requester gets the decision in her own intake conversation (posted by the intake bot), and the
+reminder sweep nudges the gate holder privately.
 
 That is a deliberate constraint, not an omission. A deal's account name, discount and contract value
 are the substance of the request, and a channel shows them to everyone in it. A channel also invites
@@ -105,10 +105,10 @@ the card only to the one accountable person removes the need for that guard enti
 still checks the role and the self-approval rule on arrival, so the enforcement point is unchanged,
 but nobody else is ever in a position to try.
 
-Two honest limits. Where a gate role has several holders the card goes to the first; fanning it out
-to several waiting nodes is deliberately not built. And the agent's intake conversation still happens
-wherever the ElevenLabs trigger points, so if that is a channel then the AE's own words are visible
-there. Pointing the trigger at direct messages closes that too.
+One honest limit. Where a gate role has several holders the card goes to the first; fanning it out
+to several waiting nodes is deliberately not built. The intake conversation itself is a direct message
+to a Slack app the company owns (the ElevenAgents Direct Message trigger on a bring-your-own app), so
+the AE's own words are never in a channel either.
 
 ## 3. Slack app requirements
 
@@ -158,8 +158,8 @@ the service, which has no such routes.
    `reason`/`error`/`detail`.
 
 Second entry point: **Notify webhook** (`POST /webhook/notify`) > the same **Verify signature** code > **Route by
-kind** (Switch): `requester_dm` posts `payload.text` to `target.slack_user_id`; `thread_update` posts it to
-`target.channel_id` as a reply to `target.thread_ts`. Any other kind is dropped (no fallback output).
+kind** (Switch): `requester_dm` posts `payload.text` to `target.slack_user_id` from the intake bot's
+credential, so it lands in the AE's own conversation. Any other kind is dropped (no fallback output).
 
 ## 6. n8n holds no decision state
 
