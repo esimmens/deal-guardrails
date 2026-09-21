@@ -18,6 +18,13 @@
         "backup_llm_config": {
           "preference": "disabled"
         }
+      },
+      "dynamic_variables": {
+        "dynamic_variable_placeholders": {
+          "integration__slack_user_id": "",
+          "integration__slack_channel_id": "",
+          "integration__slack_thread_ts": ""
+        }
       }
     },
     "conversation": {
