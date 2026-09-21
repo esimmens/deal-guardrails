@@ -1,0 +1,650 @@
+{
+  "name": "deal-card",
+  "id": "DGdealcard000001",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deal-card",
+        "responseMode": "onReceived",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "ee9eacca-d8b9-5fb3-b009-b3f104d6b0be",
+      "name": "Deal card webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "eb1ab938-4162-542e-a945-5f9f97eabe3f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verify X-DG-Signature = sha256=HMAC_SHA256(secret, \"<ts>.<raw body>\") and output the parsed body.\n// The raw bytes matter: the service signs canonical JSON (sorted keys, compact separators, floats\n// like 125000.0), which a re-serialisation in JavaScript would not reproduce.\nconst crypto = require('crypto');\n\nlet secret;\ntry {\n  secret = $env.DG_N8N_SHARED_SECRET;\n} catch (e) {\n  throw new Error('n8n blocks $env in this build. Set N8N_BLOCK_ENV_ACCESS_IN_NODE=\"false\" on the n8n container. (' + e.message + ')');\n}\nif (!secret) {\n  throw new Error('DG_N8N_SHARED_SECRET is empty or not set on the n8n container.');\n}\n\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst ts = String(headers['x-dg-timestamp'] || '');\nconst sig = String(headers['x-dg-signature'] || '');\n\nif (!/^\\d+$/.test(ts)) {\n  throw new Error('Rejected: missing or malformed X-DG-Timestamp');\n}\nconst skew = Math.abs(Math.floor(Date.now() / 1000) - Number(ts));\nif (skew > 300) {\n  throw new Error('Rejected: X-DG-Timestamp is ' + skew + 's away from now (limit 300s)');\n}\n\n// Raw body bytes come from the Webhook node option \"Raw Body\" (binary property \"data\").\nconst h = (typeof helpers === 'object' && helpers) || (this && this.helpers);\nlet raw;\ntry {\n  raw = await h.getBinaryDataBuffer(0, 'data');\n} catch (e) {\n  const inline = item.binary && item.binary.data && item.binary.data.data;\n  if (!inline) {\n    throw new Error('Rejected: raw body unavailable. Enable \"Raw Body\" on the Webhook node. (' + e.message + ')');\n  }\n  raw = Buffer.from(inline, 'base64');\n}\n\nconst expected = 'sha256=' + crypto.createHmac('sha256', secret).update(ts + '.').update(raw).digest('hex');\nconst a = Buffer.from(sig, 'utf8');\nconst b = Buffer.from(expected, 'utf8');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {\n  throw new Error('Rejected: X-DG-Signature mismatch');\n}\n\nconst body = JSON.parse(raw.toString('utf8'));\nreturn [{ json: body }];\n"
+      },
+      "id": "67f3a8bd-eafb-548e-8219-80825ae7c65f",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the service's approval_card notification into a Slack card.\n// Outputs: blocks (Block Kit, for a plain Send node), text (mrkdwn, what Send and Wait renders),\n// and the fields later nodes need. Every value comes from the service; n8n derives nothing.\nconst n = $input.first().json;\nif (n.kind !== 'approval_card') {\n  throw new Error('Expected kind approval_card, got ' + n.kind);\n}\nconst p = n.payload || {};\n\nconst esc = (v) => String(v === null || v === undefined ? '' : v)\n  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst usd = (v) => {\n  const num = Number(v);\n  if (!Number.isFinite(num)) return 'n/a';\n  const parts = num.toFixed(2).split('.');\n  return '$' + parts[0].replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',') + '.' + parts[1];\n};\nconst pct = (v) => (v === null || v === undefined || v === '') ? 'n/a' : v + '%';\n\nconst requester = p.requester || {};\nconst requesterLine = [requester.name, requester.title].filter(Boolean).map(esc).join(', ') || 'unknown';\nconst gateIds = Array.isArray(p.gate_slack_user_ids) ? p.gate_slack_user_ids.filter(Boolean) : [];\nconst gateNames = Array.isArray(p.gate_names) ? p.gate_names : [];\nconst mentions = gateIds.map((id) => '<@' + id + '>').join(' ');\nconst gateLabel = p.gate_label || p.gate_role || 'gate approver';\nconst waitingOn = mentions || esc(gateNames.join(', ')) || 'no approver on file';\n\nconst requiredLines = (Array.isArray(p.required) ? p.required : []).map((r) => {\n  const isGate = r.is_gate === true || (p.gate_role && r.role === p.gate_role);\n  return '• ' + esc(r.label || r.role) + (isGate ? ' (this card)' : ' (displayed, not wired in this build)');\n});\nif (requiredLines.length === 0) requiredLines.push('• none listed');\n\nconst ruleLines = (Array.isArray(p.rules_fired) ? p.rules_fired : [])\n  .map((r) => '• ' + esc(r.id) + ': ' + esc(r.effect || r.title));\nif (ruleLines.length === 0) ruleLines.push('• none');\n\nconst unresolved = Array.isArray(p.unresolved) ? p.unresolved : [];\nconst unresolvedLines = unresolved.map((u) => '*Unresolved in policy: ' + esc(u.id) + ' (' + esc(u.short) + ')*');\nconst flags = Array.isArray(p.flags) ? p.flags : [];\n\nconst title = p.deal_id + ' · ' + (p.account || 'unknown account');\nconst summary = 'List total ' + usd(p.list_total_usd) + ' · Discount ' + pct(p.discount_percent)\n  + ' · Net ' + usd(p.net_total_usd) + ' · Term ' + (p.term_months === null || p.term_months === undefined ? 'n/a' : p.term_months) + ' months'\n  + ' · Payment ' + esc(p.payment_terms) + ' · Segment ' + esc(p.segment);\n\nconst blocks = [\n  { type: 'header', text: { type: 'plain_text', text: title.slice(0, 150), emoji: false } },\n  { type: 'section', fields: [\n    { type: 'mrkdwn', text: '*List total*\\n' + usd(p.list_total_usd) },\n    { type: 'mrkdwn', text: '*Discount*\\n' + pct(p.discount_percent) },\n    { type: 'mrkdwn', text: '*Net*\\n' + usd(p.net_total_usd) },\n    { type: 'mrkdwn', text: '*Term*\\n' + (p.term_months === null || p.term_months === undefined ? 'n/a' : p.term_months) + ' months' },\n    { type: 'mrkdwn', text: '*Payment terms*\\n' + esc(p.payment_terms) },\n    { type: 'mrkdwn', text: '*Segment*\\n' + esc(p.segment) },\n    { type: 'mrkdwn', text: '*Requester*\\n' + requesterLine },\n  ] },\n  { type: 'section', text: { type: 'mrkdwn', text: '*Approvals required*\\n' + requiredLines.join('\\n') } },\n  { type: 'section', text: { type: 'mrkdwn', text: '*Rules fired*\\n' + ruleLines.join('\\n') } },\n];\nif (unresolvedLines.length) {\n  blocks.push({ type: 'section', text: { type: 'mrkdwn', text: unresolvedLines.join('\\n') } });\n}\nconst contextElements = [];\nif (p.receipt_url) contextElements.push({ type: 'mrkdwn', text: '<' + p.receipt_url + '|Open receipt>' });\nif (flags.length) contextElements.push({ type: 'mrkdwn', text: 'Flags: ' + flags.map(esc).join(', ') });\nif (contextElements.length) blocks.push({ type: 'context', elements: contextElements });\nblocks.push({ type: 'section', text: { type: 'mrkdwn', text: 'Gate: ' + esc(gateLabel) + ', waiting on ' + waitingOn } });\n\n// Plain mrkdwn version. Send and Wait renders only this (one section block plus its buttons).\nconst textLines = [\n  '*' + esc(title) + '*',\n  summary,\n  'Requester: ' + requesterLine,\n  '*Approvals required*',\n  ...requiredLines,\n  '*Rules fired*',\n  ...ruleLines,\n  ...unresolvedLines,\n  ...(flags.length ? ['Flags: ' + flags.map(esc).join(', ')] : []),\n  'Gate: ' + esc(gateLabel) + ', waiting on ' + waitingOn,\n  ...(p.receipt_url ? ['<' + p.receipt_url + '|Open receipt>'] : []),\n];\nconst text = textLines.join('\\n').slice(0, 2900);\n\nreturn [{ json: {\n  notification_id: n.notification_id,\n  deal_id: p.deal_id,\n  account: p.account,\n  channel: (n.target && n.target.channel) || '#deal-approvals',\n  gate_role: p.gate_role,\n  gate_label: p.gate_label,\n  gate_slack_user_ids: gateIds,\n  gate_names: gateNames,\n  receipt_url: p.receipt_url,\n  requester: requester,\n  thread: p.thread || null,\n  blocks: blocks,\n  text: text,\n} }];\n"
+      },
+      "id": "7a88d2d6-179e-577d-80fd-922ff96f0e2d",
+      "name": "Build Block Kit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "sendAndWait",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $json.channel }}"
+        },
+        "message": "={{ $json.text }}",
+        "responseType": "approval",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Approve",
+            "buttonApprovalStyle": "primary",
+            "disapproveLabel": "Decline",
+            "buttonDisapprovalStyle": "secondary"
+          }
+        },
+        "captureResponder": true,
+        "approvers": "={{ $('Build Block Kit').first().json.gate_slack_user_ids }}",
+        "unauthorizedReplyText": "Only the gate approvers named on this card can decide it. Your click was not recorded.",
+        "postDecisionBehavior": "showOutcome",
+        "options": {
+          "appendAttribution": false,
+          "limitWaitTime": {
+            "values": {
+              "limitType": "afterTimeInterval",
+              "resumeAmount": 7,
+              "resumeUnit": "days"
+            }
+          }
+        }
+      },
+      "id": "950c9c6d-db04-5a2e-bd9f-ca70a7ad0a73",
+      "name": "Slack approval card",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        720,
+        0
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      },
+      "webhookId": "73e09c48-6686-5b54-8521-9aa3fb9741b4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2d454a71-953f-5da7-acb3-21435a031a86",
+              "leftValue": "={{ typeof $json.data?.approved === 'boolean' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "090333cf-6b34-5d4b-91f7-5ce3ce436e0a",
+      "name": "Responded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build and sign the approval event for POST /events/approval.\n// The service re-reads the deal row and decides whether this click counts; n8n only reports it.\nconst crypto = require('crypto');\n\nlet secret;\ntry {\n  secret = $env.DG_N8N_SHARED_SECRET;\n} catch (e) {\n  throw new Error('n8n blocks $env in this build. Set N8N_BLOCK_ENV_ACCESS_IN_NODE=\"false\" on the n8n container. (' + e.message + ')');\n}\nif (!secret) {\n  throw new Error('DG_N8N_SHARED_SECRET is empty or not set on the n8n container.');\n}\n\nconst resp = ($input.first().json || {}).data || {};\nconst card = $('Build Block Kit').first().json;\n\nif (typeof resp.approved !== 'boolean') {\n  throw new Error('No decision in the Send and Wait output (data.approved missing). Nothing was sent to the service.');\n}\nconst responderId = resp.responder && resp.responder.id;\nif (!responderId) {\n  // Deliberately no fallback to the first gate approver: an unattributed click must not become\n  // a recorded decision. Enable \"Capture Who Responded\" and the Slack app Interactivity URL.\n  throw new Error('Slack did not report who clicked (data.responder.id missing). Not sending an unattributed decision.');\n}\n\nconst payload = {\n  deal_id: card.deal_id,\n  slack_user_id: responderId,\n  decision: resp.approved === true ? 'approve' : 'reject',\n  slack_message_ts: resp.messageId ? String(resp.messageId) : null,\n  responded_at: resp.respondedAt || new Date().toISOString(),\n};\nconst body = JSON.stringify(payload); // exactly what the HTTP Request node sends, byte for byte\nconst ts = String(Math.floor(Date.now() / 1000));\nconst sig = 'sha256=' + crypto.createHmac('sha256', secret).update(ts + '.' + body, 'utf8').digest('hex');\n\nreturn [{ json: {\n  body: body,\n  ts: ts,\n  sig: sig,\n  deal_id: card.deal_id,\n  decision: payload.decision,\n  responder: resp.responder,\n  channel: resp.channel,\n  message_ts: payload.slack_message_ts,\n  responded_at: payload.responded_at,\n} }];\n"
+      },
+      "id": "5942a462-3f0e-5a90-afe4-602ea8b77cbb",
+      "name": "Sign approval event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://service:8000/events/approval",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-DG-Timestamp",
+              "value": "={{ $json.ts }}"
+            },
+            {
+              "name": "X-DG-Signature",
+              "value": "={{ $json.sig }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "autodetect"
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "e7ccfe2c-ca2d-5023-b6b8-483cfdca4d5b",
+      "name": "POST approval to service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1440,
+        -120
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ba9a5ca3-7895-5204-8bb2-3827582ce558",
+              "leftValue": "={{ $json.body?.recorded === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d6842244-d0f1-50bb-9456-c2d53b736347",
+      "name": "Recorded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Slack approval card').first().json.data.channel }}"
+        },
+        "messageType": "text",
+        "text": "={{ 'Recorded: ' + $json.body.deal_id + ' ' + $json.body.status + ' by ' + $json.body.approver + ' at ' + DateTime.fromISO($('Sign approval event').first().json.responded_at).toUTC().toFormat('HH:mm') + ' UTC. Requester notified.' }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "thread_ts": {
+            "replyValues": {
+              "thread_ts": "={{ $('Slack approval card').first().json.data.messageId }}"
+            }
+          }
+        }
+      },
+      "id": "ad442e71-abe6-5821-ae3b-c6a9b9c895a6",
+      "name": "Slack: recorded",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        1920,
+        -240
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Slack approval card').first().json.data.channel }}"
+        },
+        "messageType": "text",
+        "text": "={{ 'Not recorded: ' + $('Sign approval event').first().json.deal_id + '. ' + ($json.body && $json.body.recorded === false && $json.body.reason ? $json.body.reason + ($json.body.by ? ' (by ' + $json.body.by + ' at ' + $json.body.at + ')' : '') : $json.body && $json.body.detail && typeof $json.body.detail === 'object' ? $json.body.detail.error + ($json.body.detail.detail ? ': ' + (typeof $json.body.detail.detail === 'string' ? $json.body.detail.detail : JSON.stringify($json.body.detail.detail)) : '') : $json.body && typeof $json.body.detail === 'string' ? $json.body.detail : $json.error ? ($json.error.message || JSON.stringify($json.error)) : 'HTTP ' + $json.statusCode + ' ' + JSON.stringify($json.body)) }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "thread_ts": {
+            "replyValues": {
+              "thread_ts": "={{ $('Slack approval card').first().json.data.messageId }}"
+            }
+          }
+        }
+      },
+      "id": "1b8d81ec-464b-580b-875e-6dd29ee2b57d",
+      "name": "Slack: not recorded",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        1920,
+        0
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('Build Block Kit').first().json.channel }}"
+        },
+        "messageType": "text",
+        "text": "={{ 'No decision on ' + $('Build Block Kit').first().json.deal_id + ' within 7 days. This card has expired; the deal is still pending in the service and stays in the reminder sweep until the deal desk resubmits it. ' + (($('Build Block Kit').first().json.gate_slack_user_ids || []).map(id => '<@' + id + '>').join(' ') || 'Gate approver') + ', please contact the deal desk.' }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "ed868001-d15d-50e9-90fe-96e7fa6f66c0",
+      "name": "Slack: timed out",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        1200,
+        160
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "notify",
+        "responseMode": "onReceived",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "865cb0d4-93f0-5a86-b939-bfaa460550e5",
+      "name": "Notify webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        420
+      ],
+      "webhookId": "c5aa81f8-3e69-5878-9ff4-4dcfab8f2634"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verify X-DG-Signature = sha256=HMAC_SHA256(secret, \"<ts>.<raw body>\") and output the parsed body.\n// The raw bytes matter: the service signs canonical JSON (sorted keys, compact separators, floats\n// like 125000.0), which a re-serialisation in JavaScript would not reproduce.\nconst crypto = require('crypto');\n\nlet secret;\ntry {\n  secret = $env.DG_N8N_SHARED_SECRET;\n} catch (e) {\n  throw new Error('n8n blocks $env in this build. Set N8N_BLOCK_ENV_ACCESS_IN_NODE=\"false\" on the n8n container. (' + e.message + ')');\n}\nif (!secret) {\n  throw new Error('DG_N8N_SHARED_SECRET is empty or not set on the n8n container.');\n}\n\nconst item = $input.first();\nconst headers = item.json.headers || {};\nconst ts = String(headers['x-dg-timestamp'] || '');\nconst sig = String(headers['x-dg-signature'] || '');\n\nif (!/^\\d+$/.test(ts)) {\n  throw new Error('Rejected: missing or malformed X-DG-Timestamp');\n}\nconst skew = Math.abs(Math.floor(Date.now() / 1000) - Number(ts));\nif (skew > 300) {\n  throw new Error('Rejected: X-DG-Timestamp is ' + skew + 's away from now (limit 300s)');\n}\n\n// Raw body bytes come from the Webhook node option \"Raw Body\" (binary property \"data\").\nconst h = (typeof helpers === 'object' && helpers) || (this && this.helpers);\nlet raw;\ntry {\n  raw = await h.getBinaryDataBuffer(0, 'data');\n} catch (e) {\n  const inline = item.binary && item.binary.data && item.binary.data.data;\n  if (!inline) {\n    throw new Error('Rejected: raw body unavailable. Enable \"Raw Body\" on the Webhook node. (' + e.message + ')');\n  }\n  raw = Buffer.from(inline, 'base64');\n}\n\nconst expected = 'sha256=' + crypto.createHmac('sha256', secret).update(ts + '.').update(raw).digest('hex');\nconst a = Buffer.from(sig, 'utf8');\nconst b = Buffer.from(expected, 'utf8');\nif (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {\n  throw new Error('Rejected: X-DG-Signature mismatch');\n}\n\nconst body = JSON.parse(raw.toString('utf8'));\nreturn [{ json: body }];\n"
+      },
+      "id": "5a23a3d2-9e73-5fe0-82e6-9d4c04825871",
+      "name": "Verify signature (notify)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "220ef11c-c6cd-5b7c-8e97-714795e64793",
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "requester_dm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "requester_dm"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "83c13e14-fbf8-5e15-8b26-ce178c661c32",
+                    "leftValue": "={{ $json.kind }}",
+                    "rightValue": "thread_update",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "thread_update"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1a3cf41a-ae60-5c56-a801-c81df075bca5",
+      "name": "Route by kind",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "user",
+        "user": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.target.slack_user_id }}"
+        },
+        "messageType": "text",
+        "text": "={{ $json.payload.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "9476a9c4-6793-504c-9b22-38d8d4ee1810",
+      "name": "Slack: DM requester",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        720,
+        320
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.target.channel_id }}"
+        },
+        "messageType": "text",
+        "text": "={{ $json.payload.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "thread_ts": {
+            "replyValues": {
+              "thread_ts": "={{ $json.target.thread_ts }}"
+            }
+          }
+        }
+      },
+      "id": "d88ced34-15cb-54f7-8ba6-f96b7cced032",
+      "name": "Slack: thread update",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        720,
+        520
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Deal card webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Build Block Kit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Block Kit": {
+      "main": [
+        [
+          {
+            "node": "Slack approval card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack approval card": {
+      "main": [
+        [
+          {
+            "node": "Responded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responded?": {
+      "main": [
+        [
+          {
+            "node": "Sign approval event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack: timed out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign approval event": {
+      "main": [
+        [
+          {
+            "node": "POST approval to service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST approval to service": {
+      "main": [
+        [
+          {
+            "node": "Recorded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recorded?": {
+      "main": [
+        [
+          {
+            "node": "Slack: recorded",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack: not recorded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature (notify)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature (notify)": {
+      "main": [
+        [
+          {
+            "node": "Route by kind",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by kind": {
+      "main": [
+        [
+          {
+            "node": "Slack: DM requester",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slack: thread update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

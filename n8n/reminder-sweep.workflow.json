@@ -1,0 +1,234 @@
+{
+  "name": "reminder-sweep",
+  "id": "DGremindersweep1",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "f548d172-571b-5d06-807f-a03c3d787b28",
+      "name": "Every 5 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// POST /notifications/dispatch takes an empty JSON object; sign \"<ts>.{}\" with the shared secret.\nconst crypto = require('crypto');\n\nlet secret;\ntry {\n  secret = $env.DG_N8N_SHARED_SECRET;\n} catch (e) {\n  throw new Error('n8n blocks $env in this build. Set N8N_BLOCK_ENV_ACCESS_IN_NODE=\"false\" on the n8n container. (' + e.message + ')');\n}\nif (!secret) {\n  throw new Error('DG_N8N_SHARED_SECRET is empty or not set on the n8n container.');\n}\n\nconst body = '{}';\nconst ts = String(Math.floor(Date.now() / 1000));\nconst sig = 'sha256=' + crypto.createHmac('sha256', secret).update(ts + '.' + body, 'utf8').digest('hex');\nreturn [{ json: { body: body, ts: ts, sig: sig } }];\n"
+      },
+      "id": "1cdc2213-d30b-5ef6-8c92-005d9464d9d2",
+      "name": "Sign empty body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://service:8000/notifications/dispatch",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-DG-Timestamp",
+              "value": "={{ $json.ts }}"
+            },
+            {
+              "name": "X-DG-Signature",
+              "value": "={{ $json.sig }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.body }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "autodetect"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "c87c149a-07c8-5a1e-84e8-aaf51cc9ef01",
+      "name": "POST notifications dispatch",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://service:8000/deals",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "pending_approval"
+            },
+            {
+              "name": "older_than",
+              "value": "PT4H"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": false,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 15000
+        }
+      },
+      "id": "f03aa95e-2c06-5818-bc4a-e8d2c95621b6",
+      "name": "GET pending deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "id": "586e9129-f455-56b8-91a9-cf2570303f00",
+      "name": "Split Out deals",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#deal-approvals"
+        },
+        "messageType": "text",
+        "text": "={{ 'Still waiting: ' + $json.deal_id + ' (' + $json.account + ', ' + $json.discount_percent + '%) on ' + ($json.gate_label || $json.gate_role) + ' since ' + DateTime.fromISO($json.submitted_at).toUTC().toFormat('d LLL HH:mm') + ' UTC, gate: ' + ((($json.gate_slack_user_ids || []).map(id => '<@' + id + '>').join(' ')) || (($json.gate_names || []).join(', ')) || 'no approver on file') }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "1bcba06e-f89b-5c3b-9d35-4a48632014c8",
+      "name": "Slack: still waiting",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        1200,
+        0
+      ],
+      "credentials": {
+        "slackApi": {
+          "name": "Oriel Approvals bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 5 minutes": {
+      "main": [
+        [
+          {
+            "node": "Sign empty body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign empty body": {
+      "main": [
+        [
+          {
+            "node": "POST notifications dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST notifications dispatch": {
+      "main": [
+        [
+          {
+            "node": "GET pending deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET pending deals": {
+      "main": [
+        [
+          {
+            "node": "Split Out deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out deals": {
+      "main": [
+        [
+          {
+            "node": "Slack: still waiting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
