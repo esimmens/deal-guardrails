@@ -1,36 +1,137 @@
 {
   "prevent_subagent_loops": false,
   "nodes": {
-    "start_node": {"type": "start", "position": {"x": 0, "y": 0}, "edge_order": ["e1"]},
+    "start_node": {
+      "type": "start",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "edge_order": [
+        "e1"
+      ]
+    },
     "intake_node": {
-      "type": "override_agent", "label": "Intake", "entry_behavior": "auto",
-      "position": {"x": 0, "y": 140}, "edge_order": ["e2"],
+      "type": "override_agent",
+      "label": "Intake",
+      "entry_behavior": "auto",
+      "position": {
+        "x": 0,
+        "y": 140
+      },
+      "edge_order": [
+        "e2"
+      ],
       "additional_prompt": "You are in the intake phase. Collect every required field in the fixed order, one question per turn. Do not say anything has been submitted. When you have everything, restate the deal in one sentence with the approvals you believe apply and their rule ids, and ask the AE to confirm."
     },
     "submit_node": {
-      "type": "tool", "position": {"x": 0, "y": 280}, "edge_order": ["e3", "e4"],
-      "tools": [{"tool_id": "${TOOL_ID}"}]
+      "type": "tool",
+      "position": {
+        "x": 0,
+        "y": 280
+      },
+      "edge_order": [
+        "e3",
+        "e4"
+      ],
+      "tools": [
+        {
+          "tool_id": "${TOOL_ID}"
+        }
+      ]
     },
     "confirmed_node": {
-      "type": "override_agent", "label": "Confirmed", "entry_behavior": "auto",
-      "position": {"x": -220, "y": 420}, "edge_order": [],
-      "conversation_config": {"agent": {"first_message": "{{confirmation_line}} {{receipt_summary}}"}},
+      "type": "override_agent",
+      "label": "Confirmed",
+      "entry_behavior": "auto",
+      "position": {
+        "x": -220,
+        "y": 420
+      },
+      "edge_order": [],
+      "conversation_config": {
+        "agent": {
+          "first_message": "{{confirmation_line}} {{receipt_summary}}"
+        }
+      },
       "additional_prompt": "The request is on file with id {{deal_id}}. Answer questions about what happens next in one or two sentences. Never say it is approved. Never offer to approve, expedite, or contact approvers yourself."
     },
     "failed_node": {
-      "type": "override_agent", "label": "Submission failed", "entry_behavior": "auto",
-      "position": {"x": 220, "y": 420}, "edge_order": ["e5", "e6"],
-      "conversation_config": {"agent": {"first_message": "The submission did not go through. No request exists and there is no reference number. Say retry and I will submit it again, or tell me to stop."}},
+      "type": "override_agent",
+      "label": "Submission failed",
+      "entry_behavior": "auto",
+      "position": {
+        "x": 220,
+        "y": 420
+      },
+      "edge_order": [
+        "e4",
+        "e6"
+      ],
+      "conversation_config": {
+        "agent": {
+          "first_message": "The submission did not go through. No request exists and there is no reference number. Say retry and I will submit it again, or tell me to stop."
+        }
+      },
       "additional_prompt": "The submission failed. There is no deal id. Never invent one. If the AE wants to retry, say nothing else; the retry happens automatically. If they want to stop, acknowledge in one sentence."
     },
-    "end_node": {"type": "end", "position": {"x": 220, "y": 560}, "edge_order": []}
+    "end_node": {
+      "type": "end",
+      "position": {
+        "x": 220,
+        "y": 560
+      },
+      "edge_order": []
+    }
   },
   "edges": {
-    "e1": {"source": "start_node", "target": "intake_node", "forward_condition": {"type": "unconditional"}},
-    "e2": {"source": "intake_node", "target": "submit_node", "forward_condition": {"type": "llm", "label": "Confirmed, ready to submit", "condition": "Every required field has been collected and the AE has explicitly confirmed the one-sentence summary of the deal."}},
-    "e3": {"source": "submit_node", "target": "confirmed_node", "forward_condition": {"type": "result", "successful": true, "label": "Submission succeeded"}},
-    "e4": {"source": "submit_node", "target": "failed_node", "forward_condition": {"type": "result", "successful": false, "label": "Submission failed"}},
-    "e5": {"source": "failed_node", "target": "submit_node", "forward_condition": {"type": "llm", "label": "Retry", "condition": "The AE asks to retry, try again, or resubmit."}},
-    "e6": {"source": "failed_node", "target": "end_node", "forward_condition": {"type": "llm", "label": "Stop", "condition": "The AE says to stop, give up, or not to retry."}}
+    "e1": {
+      "source": "start_node",
+      "target": "intake_node",
+      "forward_condition": {
+        "type": "unconditional"
+      }
+    },
+    "e2": {
+      "source": "intake_node",
+      "target": "submit_node",
+      "forward_condition": {
+        "type": "llm",
+        "label": "Confirmed, ready to submit",
+        "condition": "Every required field has been collected and the AE has explicitly confirmed the one-sentence summary of the deal."
+      }
+    },
+    "e3": {
+      "source": "submit_node",
+      "target": "confirmed_node",
+      "forward_condition": {
+        "type": "result",
+        "successful": true,
+        "label": "Submission succeeded"
+      }
+    },
+    "e4": {
+      "source": "submit_node",
+      "target": "failed_node",
+      "forward_condition": {
+        "type": "result",
+        "successful": false,
+        "label": "Submission failed"
+      },
+      "backward_condition": {
+        "type": "llm",
+        "label": "Retry",
+        "condition": "The AE asks to retry, try again, or resubmit."
+      }
+    },
+    "e6": {
+      "source": "failed_node",
+      "target": "end_node",
+      "forward_condition": {
+        "type": "llm",
+        "label": "Stop",
+        "condition": "The AE says to stop, give up, or not to retry."
+      }
+    }
   }
 }

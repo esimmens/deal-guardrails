@@ -39,7 +39,9 @@ def post_deal(payload: DealSubmission, request: Request, background: BackgroundT
     actor = {"type": "tool", "id": "elevenagents", "conversation_id": payload.conversation_id}
     try:
         with tx() as cur:
-            result = submit_deal(cur, payload, policy, settings, actor=actor)
+            result = submit_deal(cur, payload, policy, settings, actor=actor,
+                                 slack_channel_id=payload.slack_channel_id or None,
+                                 slack_thread_ts=payload.slack_thread_ts or None)
     except SubmitError as e:
         raise HTTPException(e.status_code, {"error": e.code, "detail": e.detail}) from None
     if not result.duplicate and result.status == "pending_approval":

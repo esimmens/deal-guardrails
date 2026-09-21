@@ -37,6 +37,8 @@ class Terms(BaseModel):
 class DealSubmission(BaseModel):
     conversation_id: str | None = None
     requester_slack_user_id: str | None = None
+    slack_channel_id: str | None = None
+    slack_thread_ts: str | None = None
     account_name: str = Field(min_length=1, max_length=200)
     amount_usd: float = Field(gt=0)
     value_basis: Literal["list_total", "net_total", "acv", "per_unit"] = "list_total"

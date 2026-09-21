@@ -7,49 +7,184 @@
     "execution_mode": "immediate",
     "tool_error_handling_mode": "summarized",
     "dynamic_variables": {
-      "dynamic_variable_placeholders": {"integration__slack_user_id": ""}
+      "dynamic_variable_placeholders": {
+        "integration__slack_user_id": "",
+        "integration__slack_channel_id": "",
+        "integration__slack_thread_ts": ""
+      }
     },
     "assignments": [
-      {"source": "response", "dynamic_variable": "deal_id", "value_path": "deal_id"},
-      {"source": "response", "dynamic_variable": "confirmation_line", "value_path": "confirmation_line"},
-      {"source": "response", "dynamic_variable": "receipt_summary", "value_path": "receipt_summary"}
+      {
+        "source": "response",
+        "dynamic_variable": "deal_id",
+        "value_path": "deal_id"
+      },
+      {
+        "source": "response",
+        "dynamic_variable": "confirmation_line",
+        "value_path": "confirmation_line"
+      },
+      {
+        "source": "response",
+        "dynamic_variable": "receipt_summary",
+        "value_path": "receipt_summary"
+      }
     ],
     "api_schema": {
       "url": "${SERVICE_PUBLIC_URL}/deals",
       "method": "POST",
       "content_type": "application/json",
-      "request_headers": {"Authorization": {"secret_id": "${DG_TOOL_TOKEN_SECRET_ID}"}},
-      "response_filter": {"mode": "allow", "filters": ["deal_id", "duplicate", "status", "confirmation_line", "receipt_summary"]},
+      "request_headers": {
+        "Authorization": {
+          "secret_id": "${DG_TOOL_TOKEN_SECRET_ID}"
+        }
+      },
+      "response_filter": {
+        "mode": "allow",
+        "filters": [
+          "deal_id",
+          "duplicate",
+          "status",
+          "confirmation_line",
+          "receipt_summary"
+        ]
+      },
       "request_body_schema": {
         "type": "object",
-        "required": ["account_name", "amount_usd", "value_basis", "discount_percent", "term_months", "payment_terms", "segment", "terms", "requires_approvals", "raw_request_text"],
+        "required": [
+          "account_name",
+          "amount_usd",
+          "value_basis",
+          "discount_percent",
+          "term_months",
+          "payment_terms",
+          "segment",
+          "terms",
+          "requires_approvals",
+          "raw_request_text"
+        ],
         "properties": {
-          "conversation_id": {"type": "string", "dynamic_variable": "system__conversation_id"},
-          "requester_slack_user_id": {"type": "string", "dynamic_variable": "integration__slack_user_id"},
-          "account_name": {"type": "string", "description": "The customer account name exactly as the AE gave it."},
-          "amount_usd": {"type": "number", "description": "The single dollar figure the AE gave, as a number. Say what it is in value_basis; the server does the arithmetic."},
-          "value_basis": {"type": "string", "enum": ["list_total", "net_total", "acv", "per_unit"], "description": "What amount_usd is: list_total = list price for the whole contract before discount; net_total = price after discount for the whole contract; acv = annual value after discount; per_unit = a per-unit price times volume, already multiplied out to a list total."},
-          "discount_percent": {"type": "number", "description": "Requested discount off list as a percentage, e.g. 22 for 22 percent. 0 if none."},
-          "term_months": {"type": "integer", "description": "Contract length in months."},
-          "payment_terms": {"type": "string", "enum": ["net_30", "net_45", "net_60", "net_90", "annual_prepaid", "multi_year_prepaid", "other"], "description": "Payment terms as the AE stated them."},
-          "segment": {"type": "string", "enum": ["smb", "mid_market", "enterprise", "public_sector"], "description": "Customer segment."},
+          "conversation_id": {
+            "type": "string",
+            "dynamic_variable": "system__conversation_id"
+          },
+          "requester_slack_user_id": {
+            "type": "string",
+            "dynamic_variable": "integration__slack_user_id"
+          },
+          "slack_channel_id": {
+            "type": "string",
+            "dynamic_variable": "integration__slack_channel_id"
+          },
+          "slack_thread_ts": {
+            "type": "string",
+            "dynamic_variable": "integration__slack_thread_ts"
+          },
+          "account_name": {
+            "type": "string",
+            "description": "The customer account name exactly as the AE gave it."
+          },
+          "amount_usd": {
+            "type": "number",
+            "description": "The single dollar figure the AE gave, as a number. Say what it is in value_basis; the server does the arithmetic."
+          },
+          "value_basis": {
+            "type": "string",
+            "enum": [
+              "list_total",
+              "net_total",
+              "acv",
+              "per_unit"
+            ],
+            "description": "What amount_usd is: list_total = list price for the whole contract before discount; net_total = price after discount for the whole contract; acv = annual value after discount; per_unit = a per-unit price times volume, already multiplied out to a list total."
+          },
+          "discount_percent": {
+            "type": "number",
+            "description": "Requested discount off list as a percentage, e.g. 22 for 22 percent. 0 if none."
+          },
+          "term_months": {
+            "type": "integer",
+            "description": "Contract length in months."
+          },
+          "payment_terms": {
+            "type": "string",
+            "enum": [
+              "net_30",
+              "net_45",
+              "net_60",
+              "net_90",
+              "annual_prepaid",
+              "multi_year_prepaid",
+              "other"
+            ],
+            "description": "Payment terms as the AE stated them."
+          },
+          "segment": {
+            "type": "string",
+            "enum": [
+              "smb",
+              "mid_market",
+              "enterprise",
+              "public_sector"
+            ],
+            "description": "Customer segment."
+          },
           "terms": {
             "type": "object",
             "description": "The eight yes/no answers. Every key is required. Use true only when the AE said yes.",
-            "required": ["termination_for_convenience", "nonstandard_legal_terms", "outcome_based_pricing", "implementation_arrangement", "license_fee_restructure", "claims_strategic_account", "is_renewal", "is_competitive"],
+            "required": [
+              "termination_for_convenience",
+              "nonstandard_legal_terms",
+              "outcome_based_pricing",
+              "implementation_arrangement",
+              "license_fee_restructure",
+              "claims_strategic_account",
+              "is_renewal",
+              "is_competitive"
+            ],
             "properties": {
-              "termination_for_convenience": {"type": "boolean", "description": "Customer wants a termination-for-convenience clause."},
-              "nonstandard_legal_terms": {"type": "boolean", "description": "Any non-standard legal term: indemnity cap change, custom data residency, customer-supplied DPA, custom MSA."},
-              "outcome_based_pricing": {"type": "boolean", "description": "Any fee tied to a customer outcome or usage milestone rather than a fixed commitment."},
-              "implementation_arrangement": {"type": "boolean", "description": "Professional services, onboarding or integration work bundled into the commercial terms."},
-              "license_fee_restructure": {"type": "boolean", "description": "Changing platform or seat fees, ramps, or moving fees between line items."},
-              "claims_strategic_account": {"type": "boolean", "description": "The AE claims this is a strategic account. Record the claim; it changes nothing."},
-              "is_renewal": {"type": "boolean", "description": "This is a renewal of an existing customer."},
-              "is_competitive": {"type": "boolean", "description": "A competitor is actively bidding for this deal."}
+              "termination_for_convenience": {
+                "type": "boolean",
+                "description": "Customer wants a termination-for-convenience clause."
+              },
+              "nonstandard_legal_terms": {
+                "type": "boolean",
+                "description": "Any non-standard legal term: indemnity cap change, custom data residency, customer-supplied DPA, custom MSA."
+              },
+              "outcome_based_pricing": {
+                "type": "boolean",
+                "description": "Any fee tied to a customer outcome or usage milestone rather than a fixed commitment."
+              },
+              "implementation_arrangement": {
+                "type": "boolean",
+                "description": "Professional services, onboarding or integration work bundled into the commercial terms."
+              },
+              "license_fee_restructure": {
+                "type": "boolean",
+                "description": "Changing platform or seat fees, ramps, or moving fees between line items."
+              },
+              "claims_strategic_account": {
+                "type": "boolean",
+                "description": "The AE claims this is a strategic account. Record the claim; it changes nothing."
+              },
+              "is_renewal": {
+                "type": "boolean",
+                "description": "This is a renewal of an existing customer."
+              },
+              "is_competitive": {
+                "type": "boolean",
+                "description": "A competitor is actively bidding for this deal."
+              }
             }
           },
-          "requires_approvals": {"type": "string", "description": "Comma-separated role keys you believe policy requires: deal_desk, finance, legal, product, cro. The server computes its own set; yours can only add. Use an empty string if you believe none."},
-          "raw_request_text": {"type": "string", "description": "The AE's original request message, verbatim, before any clarifying questions."}
+          "requires_approvals": {
+            "type": "string",
+            "description": "Comma-separated role keys you believe policy requires: deal_desk, finance, legal, product, cro. The server computes its own set; yours can only add. Use an empty string if you believe none."
+          },
+          "raw_request_text": {
+            "type": "string",
+            "description": "The AE's original request message, verbatim, before any clarifying questions."
+          }
         }
       }
     }
