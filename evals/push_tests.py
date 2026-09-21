@@ -30,7 +30,7 @@ SCENARIOS_DIR = HERE / "scenarios"
 IDS_PATH = ROOT / "agent" / "ids.json"
 TEST_IDS_PATH = SCENARIOS_DIR / "test_ids.json"
 
-JUDGE_MODEL = "gpt-5.4-mini"        # evaluation_model: third family, never the agent's
+JUDGE_MODEL = "gpt-5.4"        # evaluation_model: third family, never the agent's
 SIM_USER_MODEL = "gemini-3.5-flash"  # simulated_user_model
 SIM_MAX_TURNS = {"regression": 16, "heldout": 16, "safety": 20}
 SUITES: tuple[str, ...] = ("regression", "safety", "heldout")
