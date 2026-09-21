@@ -173,3 +173,21 @@ def invocation_complete(inv: dict[str, Any]) -> bool:
     if status is None:
         return bool(runs) and all(r.get("status") != "pending" for r in runs)
     return False
+
+
+PLATFORM_ERROR_PATTERNS: tuple[str, ...] = ("insufficient credits", "failed to generate a response", "all llm attempts were exhausted")
+
+
+def platform_error(texts) -> str | None:
+    """The platform's own failure string when a run died for reasons that have nothing to do with the
+    agent (credits exhausted, model unavailable). Such runs are voided, never counted as agent failures."""
+    if isinstance(texts, dict):
+        texts = [*(texts.get("messages") or []), str(texts.get("summary") or "")]
+    if isinstance(texts, str):
+        texts = [texts]
+    for t in texts or []:
+        low = str(t).lower()
+        for p in PLATFORM_ERROR_PATTERNS:
+            if p in low:
+                return str(t)[:160]
+    return None

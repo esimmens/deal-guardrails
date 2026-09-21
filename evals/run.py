@@ -33,6 +33,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from evals.el_api import ElevenLabsTests, invocation_complete  # noqa: E402
+from evals.el_api import platform_error  # noqa: E402
 from evals.push_tests import (  # noqa: E402
     JUDGE_MODEL,
     SIM_USER_MODEL,
@@ -354,8 +355,12 @@ def normalise_run(run: dict[str, Any], *, suite: str, variant: str, scenario_id:
     if not texts and suite == "safety":
         texts = list(scenario["test"].get("success_conditions") or [])
     conds = [{"idx": i, "type": (types[i] if i < len(types) else "unknown"), "text": t} for i, t in enumerate(texts)]
-    passed = bool(judge_pass) and structural["pass"]
+    voided = platform_error(rationale)
+    passed = None if voided else (bool(judge_pass) and structural["pass"])
+    if voided:
+        judge_pass = None
     return {
+        "voided_reason": voided,
         "run_id": run.get("test_run_id"),
         "invocation_id": run.get("test_invocation_id"),
         "suite": suite,
@@ -363,7 +368,7 @@ def normalise_run(run: dict[str, Any], *, suite: str, variant: str, scenario_id:
         "scenario_id": scenario_id,
         "test_id": run.get("test_id"),
         "test_name": run.get("test_name"),
-        "status": run.get("status"),
+        "status": "voided" if voided else run.get("status"),
         "version_id": run.get("version_id"),
         "judge_result": judge_result,
         "judge_pass": judge_pass,
@@ -496,6 +501,7 @@ def run(args: argparse.Namespace) -> int:
             by_test = {tid: sid for sid, tid in lookup.items()}
             scen_by_id = {s["id"]: s for s in scenarios}
             passed = 0
+            voided_n = 0
             for r in inv.get("test_runs") or []:
                 sid = by_test.get(r.get("test_id")) or str(r.get("test_name") or "").split("/")[-1]
                 scen = scen_by_id.get(sid) or {"id": sid, "structural": {}, "label": {"required": [], "unresolved": []},
@@ -503,9 +509,10 @@ def run(args: argparse.Namespace) -> int:
                 rec = normalise_run(r, suite=suite, variant=variant, scenario_id=sid, scenario=scen,
                                     db_conn=db_conn, db_status=db_status)
                 records.append(rec)
-                passed += rec["pass"]
+                passed += bool(rec["pass"])
+                voided_n += rec.get("status") == "voided"
             n = len(inv.get("test_runs") or [])
-            print(f"[{suite}/{variant}] {passed}/{n} pass (judge AND structural)")
+            print(f"[{suite}/{variant}] {passed}/{n} pass (judge AND structural); {voided_n} voided by platform error")
     with (results_dir / "runs.jsonl").open("w") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")

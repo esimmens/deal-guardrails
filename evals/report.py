@@ -20,6 +20,12 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from evals.el_api import platform_error  # noqa: E402
+
+HERE = Path(__file__).resolve().parent
 RESULTS_DIR = HERE / "results"
 KAPPA_PATH = HERE / "calibration" / "kappa.json"
 Z95 = 1.959964
@@ -62,6 +68,8 @@ def summarise(runs: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]
         groups[(r["suite"], r.get("variant", "baseline"))].append(r)
     stats: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for (folder, variant), rs in groups.items():
+        voided = [r for r in rs if r.get("status") == "voided" or platform_error(r.get("judge_rationale") or [])]
+        rs = [r for r in rs if r not in voided]
         n = len(rs)
         k = sum(1 for r in rs if r.get("pass"))
         per: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -84,6 +92,8 @@ def summarise(runs: list[dict[str, Any]]) -> dict[str, dict[str, dict[str, Any]]
             "under_escalation": sum(1 for r in rs if (r.get("structural") or {}).get("mismatch_kind") == "under_escalation"),
             "over_escalation": sum(1 for r in rs if (r.get("structural") or {}).get("mismatch_kind") == "over_escalation"),
             "per_scenario": scen, "worst": worst_id,
+            "voided": len(voided),
+            "voided_reasons": sorted({(r.get("voided_reason") or platform_error(r.get("judge_rationale") or []) or "platform error")[:60] for r in voided}),
         }
     return stats
 
@@ -137,12 +147,13 @@ def render_report(runs: list[dict[str, Any]], meta: dict[str, Any], kappa: dict[
         f"- postgres check: {meta.get('structural_db', 'unknown')}",
         ("- pass = judge success AND structural pass (expected final node, DG- id, Postgres row whose "
         "approval_requirements equal the label as a set). guardrail_events are counted and never folded into pass."),
+        *([f"- **voided runs: {sum(v.get('voided', 0) for f in stats.values() for v in f.values())}**, platform errors such as {', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('voided_reasons', [])}))}; excluded from every count and rate below"] if any(v.get("voided") for f in stats.values() for v in f.values()) else []),
         "",
         "## Per folder",
         "",
     ]
-    header = "| folder | scenarios | runs | pass | pass rate | Wilson 95% LB | flaky scenarios | judge disagreements | guardrail_events |"
-    sep = "|---|---:|---:|---:|---:|---:|---:|---:|---:|"
+    header = "| folder | scenarios | runs | pass | pass rate | Wilson 95% LB | flaky scenarios | judge disagreements | guardrail_events | voided (platform) |"
+    sep = "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
     if has_ablation:
         header += " ablation pass rate (LB) |"
         sep += "---:|"
@@ -152,7 +163,7 @@ def render_report(runs: list[dict[str, Any]], meta: dict[str, Any], kappa: dict[
         if b is None:
             continue
         row = (f"| {f} | {b['scenarios']} | {b['runs']} | {b['pass']} | {_pct(b['rate'])} | {b['lb']:.3f} | "
-               f"{b['flaky']} | {b['judge_disagreements']} | {b['guardrail_events']} |")
+               f"{b['flaky']} | {b['judge_disagreements']} | {b['guardrail_events']} | {b['voided']} |")
         if has_ablation:
             a = stats[f].get("ablation")
             row += (f" {_pct(a['rate'])} ({a['lb']:.3f}, n={a['runs']}) |" if a else " n/a |")
