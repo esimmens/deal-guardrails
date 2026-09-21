@@ -151,7 +151,7 @@ def render_report(runs: list[dict[str, Any]], meta: dict[str, Any], kappa: dict[
         ("- pass = judge success AND structural pass (expected final node, DG- id, Postgres row whose "
         "approval_requirements equal the label as a set). guardrail_events are counted and never folded into pass."),
         *([f"- **voided runs: {sum(v.get('voided', 0) for f in stats.values() for v in f.values())}**, platform errors such as {', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('voided_reasons', [])}))}; excluded from every count and rate below"] if any(v.get("voided") for f in stats.values() for v in f.values()) else []),
-        *([f"- **infra errors: {sum(v.get('infra', 0) for f in stats.values() for v in f.values())}**, real submit calls that died in the test harness's own tunnel ({', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('infra_reasons', [])}))}); they say nothing about the agent and are excluded from every count and rate below"] if any(v.get("infra") for f in stats.values() for v in f.values()) else []),
+        *([f"- **infra errors: {sum(v.get('infra', 0) for f in stats.values() for v in f.values())}**, submit calls that died in the test harness itself, the tunnel or a test/tool configuration error, before the service could be reached ({', '.join(sorted({x for f in stats.values() for v in f.values() for x in v.get('infra_reasons', [])}))}); they say nothing about the agent and are excluded from every count and rate below"] if any(v.get("infra") for f in stats.values() for v in f.values()) else []),
         "",
         "## Per folder",
         "",
