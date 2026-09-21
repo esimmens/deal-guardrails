@@ -92,11 +92,12 @@ Numbers appear in `evals/results/published/` once a full run has been done, not 
 
 ## Status
 
-As of 2026-09-20, evening. Verified: the policy engine, schema, audit chain, service and seed
-(94 tests); the agent, tool and workflow pushed to ElevenAgents; the full path Slack-shaped
-test -> agent -> tunnel -> service -> Postgres, three times (DG-1042 to DG-1044). Not yet
-verified: the agent on Claude. Every run so far was produced by the platform's default backup
-models because the workspace ran out of credits, which the cascade hid until it was disabled
-and the failure surfaced as a red. The n8n workflows import and parse but have not made a live
-Slack round trip, and the evaluation suite has only run offline. The record of what was found,
-including the mistakes, is `docs/build-log.md`.
+As of 2026-09-21. Verified: the policy engine, schema, audit chain, service and seed (94 tests);
+the agent, tool and workflow pushed to ElevenAgents; the full path test -> agent -> tunnel ->
+service -> Postgres, four times (DG-1042 to DG-1045); the agent running on Claude Sonnet 5 with
+the backup cascade disabled, and Anthropic prompt caching active on the platform. The evening of
+2026-09-20 was spent finding out why Claude produced no turns: Anthropic models are gated behind
+a paid ElevenLabs plan, and the platform's default fallback chain answered with Gemini so quietly
+that only the per-turn `producing_llm` field gave it away. Not yet verified: the n8n workflows
+against a live Slack workspace, and the evaluation suite beyond single runs. The record of what
+was found, including the wrong turns, is `docs/build-log.md`.
