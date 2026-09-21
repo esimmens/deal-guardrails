@@ -1,0 +1,9 @@
+env
+.env
+.venv/
+__pycache__/
+*.pyc
+evals/results/
+!evals/results/published/
+docs/raw-take.mp4
+.DS_Store

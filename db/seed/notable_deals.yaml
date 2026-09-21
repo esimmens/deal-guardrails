@@ -1,0 +1,62 @@
+# Hand-authored rows placed at fixed positions in the 41-deal history. Everything else is
+# generated deterministically by seed.py. Positions are 1-based; DG number = 1000 + position.
+- position: 17
+  note: "Competitive renewal at 28% approved by Deal Desk alone under the March memo. Half of the R10 contradiction."
+  requester: maren.holloway@orielspeech.example
+  account: Fennimore Bank
+  amount_usd: 412000
+  discount_percent: 28
+  term_months: 24
+  payment_terms: net_30
+  segment: enterprise
+  terms: {is_renewal: true, is_competitive: true, claims_strategic_account: true}
+  requires_approvals: deal_desk
+  raw_request_text: "Fennimore renewal, competitive (they have a Sonant quote), 412k list over 2 years, need 28% to hold it. Strategic logo."
+  outcome: approved
+  decided_after_hours: 5
+- position: 29
+  note: "Deal Desk's own house-account request. Only holder is the requester, so the gate escalates to the CRO (skip-level)."
+  requester: priya.ramaswamy@orielspeech.example
+  account: Brightwater Health
+  amount_usd: 180000
+  discount_percent: 20
+  term_months: 12
+  payment_terms: net_30
+  segment: enterprise
+  terms: {is_renewal: true}
+  requires_approvals: deal_desk
+  raw_request_text: "House account I cover directly: Brightwater renewal, 180k list, 20% to match last year."
+  outcome: approved
+  decided_after_hours: 26
+- position: 33
+  note: "New logo at 27%. Deal Desk read the March carve-out strictly and asked for CRO sign-off. The other half of R10."
+  requester: tobias.achterberg@orielspeech.example
+  account: Cardinal Peak Studios
+  amount_usd: 96000
+  discount_percent: 27
+  term_months: 12
+  payment_terms: net_30
+  segment: mid_market
+  terms: {is_renewal: false, is_competitive: false}
+  requires_approvals: "deal_desk, cro"
+  raw_request_text: "Cardinal Peak, new logo, 96k list, asking 27%. Priya says this one needs Rafael because it isn't a competitive renewal."
+  outcome: approved
+  decided_after_hours: 49
+- position: 38
+  note: "Superseded: the AE corrected the term after submitting. The original is kept and linked."
+  requester: maren.holloway@orielspeech.example
+  account: Vantage Point Insurance
+  amount_usd: 250000
+  discount_percent: 18
+  term_months: 12
+  payment_terms: net_60
+  segment: enterprise
+  terms: {}
+  requires_approvals: "deal_desk, finance"
+  raw_request_text: "Vantage Point, 250k, 18%, net-60. Actually the term is 24 months not 12, resubmitting."
+  outcome: superseded
+  superseded_by:
+    amount_usd: 500000
+    term_months: 24
+    raw_request_text: "Vantage Point corrected: 500k over 24 months, 18%, net-60."
+    outcome: pending

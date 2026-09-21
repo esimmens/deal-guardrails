@@ -1,0 +1,11 @@
+# One public entry point (ngrok -> caddy:80). n8n's Send-and-Wait resume paths go to n8n;
+# everything else goes to the service. The n8n editor and /webhook/* triggers stay private.
+:80 {
+	@n8n path /webhook-waiting/* /webhook-waiting-slack* /form-waiting/*
+	handle @n8n {
+		reverse_proxy n8n:5678
+	}
+	handle {
+		reverse_proxy service:8000
+	}
+}

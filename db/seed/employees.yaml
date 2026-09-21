@@ -1,0 +1,58 @@
+# Oriel Speech people. Slack ids come from the environment when the real workspace exists
+# (SLACK_ID_MAREN etc.); otherwise the placeholder is used so everything still runs.
+- email: rafael.quintero@orielspeech.example
+  name: Rafael Quintero
+  title: Chief Revenue Officer
+  roles: [cro]
+  manager: null
+  slack_env: SLACK_ID_RAFAEL
+  slack_placeholder: U_RAFAEL
+- email: noor.el-amin@orielspeech.example
+  name: Noor El-Amin
+  title: Director, Enterprise Sales
+  roles: [ae]
+  manager: rafael.quintero@orielspeech.example
+  slack_env: SLACK_ID_NOOR
+  slack_placeholder: U_NOOR
+- email: maren.holloway@orielspeech.example
+  name: Maren Holloway
+  title: Enterprise Account Executive
+  roles: [ae]
+  manager: noor.el-amin@orielspeech.example
+  slack_env: SLACK_ID_MAREN
+  slack_placeholder: U_MAREN
+- email: tobias.achterberg@orielspeech.example
+  name: Tobias Achterberg
+  title: Mid-Market Account Executive
+  roles: [ae]
+  manager: noor.el-amin@orielspeech.example
+  slack_env: SLACK_ID_TOBIAS
+  slack_placeholder: U_TOBIAS
+- email: priya.ramaswamy@orielspeech.example
+  name: Priya Ramaswamy
+  title: Deal Desk Lead
+  roles: [deal_desk]
+  manager: rafael.quintero@orielspeech.example
+  slack_env: SLACK_ID_PRIYA
+  slack_placeholder: U_PRIYA
+- email: dana.okafor@orielspeech.example
+  name: Dana Okafor
+  title: Revenue Controller
+  roles: [finance]
+  manager: rafael.quintero@orielspeech.example
+  slack_env: SLACK_ID_DANA
+  slack_placeholder: U_DANA
+- email: silas.wren@orielspeech.example
+  name: Silas Wren
+  title: Commercial Counsel
+  roles: [legal]
+  manager: rafael.quintero@orielspeech.example
+  slack_env: SLACK_ID_SILAS
+  slack_placeholder: U_SILAS
+- email: ingrid.baptiste@orielspeech.example
+  name: Ingrid Baptiste
+  title: Head of Product
+  roles: [product]
+  manager: rafael.quintero@orielspeech.example
+  slack_env: SLACK_ID_INGRID
+  slack_placeholder: U_INGRID

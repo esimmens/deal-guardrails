@@ -1,0 +1,133 @@
+# Deal Guardrails: non-standard deal approval policy, machine-readable form.
+#
+# This file is the evaluator's input. The prose version (deal_approval_policy.md) is what
+# the agent reads and cites. The two must agree on rule ids; a test checks that.
+#
+# ASSUMPTION NOTE. Every numeric threshold below is a modelling assumption. Oriel Speech is
+# fictional. The bands are modelled on published SaaS discount-governance matrices and on
+# public anchors from the company this project is aimed at; none of their internal
+# thresholds are public. The routing logic is the artifact; the thresholds are parameters.
+#
+# The evaluator is additive: a rule can add an approver or a flag, and can declare itself
+# unresolved (which escalates to Deal Desk by name). No rule ever removes an approver.
+
+policy_id: oriel_nonstandard_deal_approval
+version_label: "4.2"
+
+roles: [ae, deal_desk, finance, legal, product, cro]
+
+# Gate = the single highest-ranked required role. Only that role's card is wired in this build;
+# the others are displayed as required.
+role_rank:
+  ae: 1
+  deal_desk: 2
+  product: 3
+  finance: 4
+  legal: 5
+  cro: 6
+
+precedence:
+  additive: true
+  unresolved_escalates_to: deal_desk
+
+rules:
+  # ---- Discount bands (ASSUMPTION: 15 / 30) ----
+  - id: R1a
+    title: within AE authority
+    when: {field: discount_bps, lte: 1500}
+    then: {flag: within_ae_authority}
+
+  - id: R1b
+    title: Deal Desk band
+    when: {all: [{field: discount_bps, gt: 1500}, {field: discount_bps, lte: 3000}]}
+    then: {require: [deal_desk]}
+
+  - id: R1c
+    title: CRO band
+    when: {field: discount_bps, gt: 3000}
+    then: {require: [cro, deal_desk]}
+
+  # ---- Deliberately unresolved: the multi-year allowance ----
+  - id: R2
+    title: multi-year prepaid allowance (size unspecified; precedence over R1 not stated)
+    when:
+      all:
+        - {field: term_months, gte: 24}
+        - {field: payment_terms, in: [annual_prepaid, multi_year_prepaid]}
+        - {field: discount_bps, gt: 1500}
+    then:
+      unresolved: true
+      note: >-
+        Policy s3.2 says Deal Desk "maintains the schedule of allowances" for multi-year prepaid
+        commitments and does not state the allowance size or whether it changes the band.
+        The evaluator does not guess. Deal Desk settles it.
+
+  # ---- Payment and legal terms ----
+  - id: R3
+    title: payment terms longer than net-30
+    when: {field: payment_terms, in: [net_45, net_60, net_90, other]}
+    then: {require: [finance]}
+
+  - id: R4
+    title: non-standard legal terms
+    when: {field: nonstandard_legal_terms, eq: true}
+    then: {require: [legal]}
+
+  - id: R5
+    title: termination for convenience
+    when: {field: termination_for_convenience, eq: true}
+    then:
+      require: [legal, deal_desk]
+      note: Termination for convenience is both a legal exposure and a revenue-recognition question.
+
+  # ---- The three first-party term types ----
+  - id: R6
+    title: outcome-based pricing
+    when: {field: outcome_based_pricing, eq: true}
+    then: {require: [product, finance]}
+
+  - id: R7
+    title: implementation arrangement
+    when: {field: implementation_arrangement, eq: true}
+    then: {require: [product]}
+
+  - id: R8
+    title: license fee restructuring
+    when: {field: license_fee_restructure, eq: true}
+    then: {require: [finance]}
+
+  # ---- Claims the requester cannot self-certify ----
+  - id: R9
+    title: strategic-account claim is never self-certified
+    when: {field: claims_strategic_account, eq: true}
+    then:
+      flag: strategic_claim_unverified
+      note: >-
+        Policy s6 permits exceptions for strategic accounts. The designation is Deal Desk's to
+        make, not the requester's. A claim never reduces a requirement.
+
+  # ---- Deliberately unresolved: the contested 25-30 band ----
+  - id: R10
+    title: contested band, 25-30% on a deal that is not a competitive renewal
+    when:
+      all:
+        - {field: discount_bps, gt: 2500}
+        - {field: discount_bps, lte: 3000}
+        - {any: [{field: is_renewal, eq: false}, {field: is_competitive, eq: false}]}
+    then:
+      unresolved: true
+      note: >-
+        A March 2026 memo raised the Deal Desk ceiling from 25% to 30% "for competitive renewals
+        only". Policy v4.2 (August) prints 30% with no carve-out. Whether a non-competitive or
+        new-logo deal in this band needs the CRO is contested. The evaluator does not guess.
+
+  # ---- Size and sector (ASSUMPTION: $1,000,000 net TCV) ----
+  - id: R11
+    title: large deal
+    when: {field: net_total_cents, gte: 100000000}
+    then: {require: [cro]}
+
+  - id: R12
+    title: public-sector procurement terms
+    when: {field: segment, eq: public_sector}
+    then: {require: [legal]}

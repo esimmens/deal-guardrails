@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: dg_admin
+      POSTGRES_PASSWORD: ${PG_ADMIN_PASSWORD}
+      POSTGRES_DB: dg
+      PG_SERVICE_PASSWORD: ${PG_SERVICE_PASSWORD}
+      PG_READER_PASSWORD: ${PG_READER_PASSWORD}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+      - ./db:/db:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dg_admin -d dg"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  service:
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://dg_service:${PG_SERVICE_PASSWORD}@postgres:5432/dg
+      DATABASE_URL_READER: postgresql://dg_reader:${PG_READER_PASSWORD}@postgres:5432/dg
+      DG_TOOL_TOKEN: ${DG_TOOL_TOKEN}
+      DG_N8N_SHARED_SECRET: ${DG_N8N_SHARED_SECRET}
+      N8N_WEBHOOK_BASE: http://n8n:5678/webhook
+      PUBLIC_BASE_URL: https://${NGROK_DOMAIN}
+      POLICY_PATH: /app/policy/pricing_policy.yaml
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      SLACK_CHANNEL_APPROVALS: ${SLACK_CHANNEL_APPROVALS}
+    volumes:
+      - ./policy:/app/policy:ro
+    ports: ["8000:8000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    environment:
+      N8N_PORT: 5678
+      WEBHOOK_URL: https://${NGROK_DOMAIN}/
+      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_SECURE_COOKIE: "false"
+      N8N_RUNNERS_ENABLED: "true"
+      GENERIC_TIMEZONE: America/New_York
+      DG_N8N_SHARED_SECRET: ${DG_N8N_SHARED_SECRET}
+    ports: ["5678:5678"]
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n:/n8n:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    ports: ["8080:80"]
+    restart: unless-stopped
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    command: ["http", "--url=${NGROK_DOMAIN}", "caddy:80"]
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    ports: ["4040:4040"]
+    depends_on: [caddy]
+    restart: unless-stopped
+
+volumes:
+  pgdata: {}
+  n8n_data: {}

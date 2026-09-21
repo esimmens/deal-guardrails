@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>{{ d.deal_id }} · Deal Guardrails</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#fff;--fg:#111;--mut:#666;--line:#e5e5e5;--acc:#1f5fbf;--warn:#b45309;--ok:#15803d}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#eee;--mut:#9aa;--line:#2a2f3a;--acc:#7fb0ff;--warn:#f59e0b;--ok:#4ade80}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,system-ui,Segoe UI,Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;margin:28px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.muted{color:var(--mut)}.pill{display:inline-block;padding:2px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px}
+table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}pre{white-space:pre-wrap;background:rgba(127,127,127,.08);padding:12px;border-radius:8px}
+.rule{font-family:ui-monospace,monospace}.unres{color:var(--warn)}.gate{color:var(--acc)}
+</style></head><body><main>
+<h1>{{ d.deal_id }} <span class="pill">{{ d.status }}</span></h1>
+<div class="muted">{{ d.account }} · requested by {{ d.requester }} · policy {{ d.policy_version[:19] }}…</div>
+
+<h2>You wrote</h2><pre>{{ d.receipt.you_wrote }}</pre>
+
+<h2>The model read</h2>
+<table>{% for k, v in d.receipt.model_read.items() %}<tr><td class="muted">{{ k }}</td><td><code>{{ v }}</code></td></tr>{% endfor %}</table>
+
+<h2>Code decided</h2>
+<table><tr><th>Rule</th><th>Effect</th></tr>
+{% for r in d.receipt.rules_fired %}<tr><td class="rule">{{ r.id }}</td><td>{{ r.title }} → {{ r.effect }}</td></tr>{% endfor %}</table>
+{% if d.receipt.unresolved %}<p class="unres">Unresolved in policy: {% for u in d.receipt.unresolved %}<span class="rule">{{ u.id }}</span> ({{ u.short }}){% if not loop.last %}; {% endif %}{% endfor %}. Deal Desk settles this.</p>{% endif %}
+
+<h2>Approvals</h2>
+<table><tr><th>Role</th><th>Source</th><th>Rules</th><th>Decision</th></tr>
+{% for r in d.receipt.required %}<tr><td>{{ r.label }}{% if r.is_gate %} <span class="gate">(gate{% if d.receipt.gate_names %}: {{ d.receipt.gate_names|join(' or ') }}{% endif %})</span>{% endif %}</td>
+<td>{{ r.added_by }}</td><td class="rule">{{ r.rule_ids|join(', ') }}</td>
+<td>{% set a = (d.approvals|selectattr('role','equalto',r.role)|list) %}{% if a %}{{ a[0].decision }} by {{ a[0].by }} at {{ a[0].at }}{% else %}<span class="muted">waiting</span>{% endif %}</td></tr>{% endfor %}
+{% if not d.receipt.required %}<tr><td colspan="4" class="muted">None required. Recorded.</td></tr>{% endif %}</table>
+<p class="muted">The assistant never approves anything. Approvals are recorded by the approver, in the approval system.</p>
+
+<h2>Audit trail</h2>
+<table>{% for e in d.audit %}<tr><td class="rule">{{ e.seq }}</td><td>{{ e.type }}</td><td class="muted">{{ e.at }}</td></tr>{% endfor %}</table>
+</main></body></html>

@@ -1,0 +1,7 @@
+# All figures except agent_minute are modelling assumptions. agent_minute mirrors a public
+# per-minute anchor from the company this project is aimed at.
+- {sku: tts_1k_chars,           name: Text to speech, per 1k characters,   unit: 1k_chars, list_unit_price_usd: 0.30,   is_assumption: true}
+- {sku: stt_minute,             name: Speech to text, per audio minute,    unit: minute,   list_unit_price_usd: 0.006,  is_assumption: true}
+- {sku: agent_minute,           name: Conversational agent, per minute,    unit: minute,   list_unit_price_usd: 0.08,   is_assumption: false}
+- {sku: platform_fee_year,      name: Enterprise platform fee, per year,   unit: year,     list_unit_price_usd: 25000,  is_assumption: true}
+- {sku: implementation_package, name: Implementation package, one time,    unit: one_time, list_unit_price_usd: 15000,  is_assumption: true}

@@ -1,0 +1,10 @@
+- {name: Calloway Group,            segment: enterprise,    region: NA,   is_strategic: false}
+- {name: Larkspur Media,            segment: mid_market,    region: NA,   is_strategic: false}
+- {name: Brightwater Health,        segment: enterprise,    region: NA,   is_strategic: true}
+- {name: Meridian Transit Authority, segment: public_sector, region: NA,  is_strategic: false}
+- {name: Hollis & Vane,             segment: smb,           region: EMEA, is_strategic: false}
+- {name: Tamsin Logistics,          segment: mid_market,    region: EMEA, is_strategic: false}
+- {name: Fennimore Bank,            segment: enterprise,    region: NA,   is_strategic: true}
+- {name: Cardinal Peak Studios,     segment: mid_market,    region: NA,   is_strategic: false}
+- {name: Orchard Lane Retail,       segment: smb,           region: NA,   is_strategic: false}
+- {name: Vantage Point Insurance,   segment: enterprise,    region: APAC, is_strategic: false}
