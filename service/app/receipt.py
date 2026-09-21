@@ -54,8 +54,13 @@ def build_receipt(*, deal_ref: str, raw_request_text: str, model_read: dict[str,
     }
 
 
-def receipt_summary_for(receipt: dict[str, Any] | None, *, approvals_channel: str = "#deal-approvals") -> str:
-    """One paragraph the confirmed node speaks verbatim after the confirmation line."""
+def receipt_summary_for(receipt: dict[str, Any] | None) -> str:
+    """One paragraph the confirmed node speaks verbatim after the confirmation line.
+
+    Approval requests are sent privately to the person who must decide. Nothing about a deal is
+    posted to a shared channel: the commercial terms are the point of the request, and a channel
+    would show them to everyone in it and invite the wrong person to click.
+    """
     parts: list[str] = []
     req = receipt["required"]
     if req:
@@ -84,7 +89,8 @@ def receipt_summary_for(receipt: dict[str, Any] | None, *, approvals_channel: st
     if notable:
         parts.append("Flags: " + ", ".join(notable) + ".")
     if req:
-        parts.append(f"The approval card has been posted to {approvals_channel}. Nothing is approved yet.")
+        who = " or ".join(receipt.get("gate_names") or []) or "the approver"
+        parts.append(f"The approval request has been sent privately to {who}. Nothing is approved yet.")
     return " ".join(parts)
 
 

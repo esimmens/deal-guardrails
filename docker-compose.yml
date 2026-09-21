@@ -31,7 +31,6 @@ services:
       PUBLIC_BASE_URL: https://${NGROK_DOMAIN}
       POLICY_PATH: /app/policy/pricing_policy.yaml
       SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
-      SLACK_CHANNEL_APPROVALS: ${SLACK_CHANNEL_APPROVALS}
     volumes:
       - ./policy:/app/policy:ro
       - ./service:/app/service:ro   # local dev: run the working tree's code without an image rebuild

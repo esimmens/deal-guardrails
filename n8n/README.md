@@ -7,7 +7,7 @@ service decides, n8n displays and relays.
 | File | Purpose |
 | --- | --- |
 | `deal-card.workflow.json` | Two entry points. `POST /webhook/deal-card` turns an `approval_card` notification into a Slack card with Approve and Decline buttons, waits for the click, signs it, and reports it to `POST /events/approval`. `POST /webhook/notify` relays `requester_dm` and `thread_update` notifications. |
-| `reminder-sweep.workflow.json` | Every 5 minutes: `POST /notifications/dispatch` (drains the outbox), then `GET /deals?status=pending_approval&older_than=PT4H` and posts a "Still waiting" line per deal to `#deal-approvals`. |
+| `reminder-sweep.workflow.json` | Every 5 minutes: `POST /notifications/dispatch` (drains the outbox), then `GET /deals?status=pending_approval&older_than=PT4H` and direct-messages a "Still waiting" line to the holder of each deal's gate role. |
 
 Node type versions used (all are the defaults n8n 2.39.8 creates in the editor): Webhook 2.1, Code 2,
 Slack 2.7, If 2.3, Switch 3.4, HTTP Request 4.5, Schedule Trigger 1.4, Split Out 1.
@@ -77,11 +77,30 @@ instance and injects it at import time, which keeps the repo clean and the impor
 Note for n8n 2.x: the old Save button and Active toggle are gone. **Publish** does both, and the CLI
 equivalent is `n8n publish:workflow --id=<id>`, not the deprecated `update:workflow --active=true`.
 
+## Everything is a direct message
+
+No part of this system posts to a Slack channel. The approval card goes to the person who holds the
+gate role, the outcome and the 7-day timeout notice go back into that same direct message, the
+requester is told separately by direct message, and the reminder sweep nudges the gate holder
+privately.
+
+That is a deliberate constraint, not an omission. A deal's account name, discount and contract value
+are the substance of the request, and a channel shows them to everyone in it. A channel also invites
+the wrong person to click Approve, which then needs a guard at the delivery layer to undo. Sending
+the card only to the one accountable person removes the need for that guard entirely: the service
+still checks the role and the self-approval rule on arrival, so the enforcement point is unchanged,
+but nobody else is ever in a position to try.
+
+Two honest limits. Where a gate role has several holders the card goes to the first; fanning it out
+to several waiting nodes is deliberately not built. And the agent's intake conversation still happens
+wherever the ElevenLabs trigger points, so if that is a channel then the AE's own words are visible
+there. Pointing the trigger at direct messages closes that too.
+
 ## 3. Slack app requirements
 
 Bot token scopes: `chat:write`, `chat:write.public`, `users:read`, `users:read.email`, `channels:history`,
 `channels:read`. `chat:write` covers both channel posts and DMs (Slack opens the DM when a user id is passed as the
-channel); `chat:write.public` lets the bot post in `#deal-approvals` without being invited; `users:read` and
+channel, which is how every message in this system is sent); `users:read` and
 `users:read.email` let n8n resolve who clicked.
 
 Interactivity: **Features > Interactivity & Shortcuts**, enabled, Request URL

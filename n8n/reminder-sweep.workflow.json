@@ -140,16 +140,16 @@
         "authentication": "accessToken",
         "resource": "message",
         "operation": "post",
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "mode": "name",
-          "value": "#deal-approvals"
-        },
+        "select": "user",
         "messageType": "text",
         "text": "={{ 'Still waiting: ' + $json.deal_id + ' (' + $json.account + ', ' + $json.discount_percent + '%) on ' + ($json.gate_label || $json.gate_role) + ' since ' + DateTime.fromISO($json.submitted_at).toUTC().toFormat('d LLL HH:mm') + ' UTC, gate: ' + ((($json.gate_slack_user_ids || []).map(id => '<@' + id + '>').join(' ')) || (($json.gate_names || []).join(', ')) || 'no approver on file') }}",
         "otherOptions": {
           "includeLinkToWorkflow": false
+        },
+        "user": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ ($json.gate_slack_user_ids || [])[0] }}"
         }
       },
       "id": "1bcba06e-f89b-5c3b-9d35-4a48632014c8",

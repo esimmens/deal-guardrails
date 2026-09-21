@@ -35,7 +35,6 @@ class Settings(BaseSettings):
     # Neighbours
     n8n_webhook_base: str = "http://localhost:5678/webhook"
     public_base_url: str = "http://localhost:8000"
-    slack_channel_approvals: str = "#deal-approvals"
 
     # Policy
     policy_path: Path = REPO_ROOT / "policy" / "pricing_policy.yaml"

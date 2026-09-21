@@ -185,7 +185,7 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
                                      submitted_at=existing["submitted_at"], gate_role=existing["gate_role"])
         receipt = existing["receipt"] or {}
         return SubmitResult(existing["id"], existing["deal_ref"], True, existing["status"], line,
-                            receipt_summary_for(receipt, approvals_channel=settings.slack_channel_approvals) if receipt else "", receipt)
+                            receipt_summary_for(receipt) if receipt else "", receipt)
 
     deal_id, deal_ref = int(inserted["id"]), inserted["deal_ref"]
 
@@ -267,7 +267,8 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
 
     if status == "pending_approval":
         enqueue(cur, deal_id=deal_id, kind="approval_card",
-                target={"channel": settings.slack_channel_approvals},
+                # Delivered privately to whoever holds the gate role. There is no channel in this system.
+                target={"slack_user_ids": [h["slack_user_id"] for h in holders if h.get("slack_user_id")]},
                 payload={
                     "deal_id": deal_ref, "account": payload.account_name.strip(),
                     "requester": {"name": requester["full_name"], "title": requester["title"],
@@ -286,7 +287,7 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
 
     line = confirmation_line_for(deal_ref, status)
     return SubmitResult(deal_id, deal_ref, False, status, line,
-                        receipt_summary_for(receipt, approvals_channel=settings.slack_channel_approvals), receipt)
+                        receipt_summary_for(receipt), receipt)
 
 
 def _required_by(rule: dict[str, Any]) -> list[str]:
@@ -354,12 +355,8 @@ def record_decision(cur: Cursor, event: ApprovalEvent, settings: Settings, *, ac
     if requester.get("slack_user_id"):
         enqueue(cur, deal_id=deal["id"], kind="requester_dm", target={"slack_user_id": requester["slack_user_id"]},
                 payload={"text": msg, "deal_id": deal["deal_ref"], "status": new_status})
-    cur.execute("SELECT slack_channel_id, slack_thread_ts FROM conversations WHERE deal_id = %s LIMIT 1", (deal["id"],))
-    conv = cur.fetchone()
-    if conv and conv.get("slack_thread_ts"):
-        enqueue(cur, deal_id=deal["id"], kind="thread_update",
-                target={"channel_id": conv["slack_channel_id"], "thread_ts": conv["slack_thread_ts"]},
-                payload={"text": msg, "deal_id": deal["deal_ref"], "status": new_status})
+    # No thread update into the intake channel. The requester is told by direct message above; posting
+    # the outcome back into a shared channel would put the deal and its approver in front of everyone.
     return {"recorded": True, "deal_id": deal["deal_ref"], "status": new_status, "approver": approver["full_name"],
             "role": gate_role, "decision": event.decision}
 
