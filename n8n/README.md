@@ -52,21 +52,30 @@ docker compose --env-file env exec -T n8n n8n import:workflow --input=/n8n/remin
 Both files carry fixed workflow ids (`DGdealcard000001`, `DGremindersweep1`), so re-importing after an edit
 updates the existing workflow instead of creating a duplicate. The CLI import always leaves workflows inactive.
 
-Then:
+Then create the Slack credential once, and link it with the importer:
 
 1. Open http://localhost:5678 and finish the owner setup if this is a fresh instance.
-2. Create a credential of type **Slack API** named `Oriel Approvals bot`:
-   **Access Token** = `SLACK_BOT_TOKEN` (the `xoxb-` bot token), **Signature Secret** = `SLACK_SIGNING_SECRET`.
-   The Signature Secret is what verifies button clicks arriving at `/webhook-waiting-slack`; without it the Slack
-   node answers 401 to every click.
-3. Attach the credential to every Slack node. The exported nodes reference the credential by name only (no id),
-   so n8n will show them as "credential not set" until you pick it once per node. In `deal-card`: Slack approval
-   card, Slack: recorded, Slack: not recorded, Slack: timed out, Slack: DM requester, Slack: thread update. In
-   `reminder-sweep`: Slack: still waiting.
-4. Activate both workflows.
+2. Create a credential of type **Slack API** named exactly `Oriel Approvals bot`:
+   **Access Token** = `SLACK_BOT_TOKEN` (the `xoxb-` bot token), **Signature Secret** =
+   `SLACK_SIGNING_SECRET`. The Signature Secret is what verifies button clicks arriving at
+   `/webhook-waiting-slack`; without it the Slack node answers 401 to every click.
+   In n8n 2.x there is no Credentials entry in the sidebar: open any Slack node in the `deal-card`
+   workflow and choose **Create new credential** in its credential dropdown.
+3. Run the importer, which links every Slack node to that credential by id and publishes both
+   workflows:
 
-After the demo, change the sweep cadence to hourly: open `Every 5 minutes`, set Trigger Interval to Hours and
-Hours Between Triggers to 1 (in JSON: `{"field": "hours", "hoursInterval": 1}`).
+```sh
+uv run python n8n/import.py
+docker compose --env-file env restart n8n   # n8n asks for this after a CLI import
+```
+
+The workflow JSON in this repo deliberately references the credential by **name** only, so the files
+stay portable between machines. n8n resolves credentials by id, so a name-only reference publishes
+with "Credential not configured" on every Slack node. `import.py` looks the id up from the running
+instance and injects it at import time, which keeps the repo clean and the import reproducible.
+
+Note for n8n 2.x: the old Save button and Active toggle are gone. **Publish** does both, and the CLI
+equivalent is `n8n publish:workflow --id=<id>`, not the deprecated `update:workflow --active=true`.
 
 ## 3. Slack app requirements
 
