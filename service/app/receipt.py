@@ -54,7 +54,7 @@ def build_receipt(*, deal_ref: str, raw_request_text: str, model_read: dict[str,
     }
 
 
-def receipt_summary_for(receipt: dict[str, Any]) -> str:
+def receipt_summary_for(receipt: dict[str, Any] | None, *, approvals_channel: str = "#deal-approvals") -> str:
     """One paragraph the confirmed node speaks verbatim after the confirmation line."""
     parts: list[str] = []
     req = receipt["required"]
@@ -84,7 +84,7 @@ def receipt_summary_for(receipt: dict[str, Any]) -> str:
     if notable:
         parts.append("Flags: " + ", ".join(notable) + ".")
     if req:
-        parts.append("The approval card has been posted to #deal-approvals. Nothing is approved yet.")
+        parts.append(f"The approval card has been posted to {approvals_channel}. Nothing is approved yet.")
     return " ".join(parts)
 
 

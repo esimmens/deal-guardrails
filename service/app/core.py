@@ -185,7 +185,7 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
                                      submitted_at=existing["submitted_at"], gate_role=existing["gate_role"])
         receipt = existing["receipt"] or {}
         return SubmitResult(existing["id"], existing["deal_ref"], True, existing["status"], line,
-                            receipt_summary_for(receipt) if receipt else "", receipt)
+                            receipt_summary_for(receipt, approvals_channel=settings.slack_channel_approvals) if receipt else "", receipt)
 
     deal_id, deal_ref = int(inserted["id"]), inserted["deal_ref"]
 
@@ -285,7 +285,8 @@ def submit_deal(cur: Cursor, payload: DealSubmission, policy: Policy, settings: 
                 })
 
     line = confirmation_line_for(deal_ref, status)
-    return SubmitResult(deal_id, deal_ref, False, status, line, receipt_summary_for(receipt), receipt)
+    return SubmitResult(deal_id, deal_ref, False, status, line,
+                        receipt_summary_for(receipt, approvals_channel=settings.slack_channel_approvals), receipt)
 
 
 def _required_by(rule: dict[str, Any]) -> list[str]:
