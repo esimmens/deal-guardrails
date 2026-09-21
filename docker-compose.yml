@@ -34,6 +34,7 @@ services:
       SLACK_CHANNEL_APPROVALS: ${SLACK_CHANNEL_APPROVALS}
     volumes:
       - ./policy:/app/policy:ro
+      - ./service:/app/service:ro   # local dev: run the working tree's code without an image rebuild
     ports: ["8000:8000"]
     depends_on:
       postgres:
