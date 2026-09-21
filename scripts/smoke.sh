@@ -3,7 +3,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ENVFILE=$( [ -f .env ] && echo .env || echo env )
-set -a; source <(grep -E '^[A-Za-z_0-9]+=' "$ENVFILE" | sed 's/[[:space:]]*#.*//'); set +a
+# Load KEY=VALUE lines only, comments stripped. An explicit export loop: `source <(...)` with
+# `set -a` loaded nothing when run from this Mac's shell, and the loop is easy to test.
+while IFS= read -r line; do export "$line"; done < <(grep -E '^[A-Za-z_0-9]+=' "$ENVFILE" | sed 's/[[:space:]]*#.*//')
 docker compose --env-file "$ENVFILE" ps --format 'table {{.Service}}\t{{.Status}}'
 curl -sf http://localhost:8000/health >/dev/null && echo "service: ok" || { echo "service: DOWN"; exit 1; }
 curl -sf -H "ngrok-skip-browser-warning: 1" "https://$NGROK_DOMAIN/health" >/dev/null && echo "tunnel: ok" || { echo "tunnel: DOWN"; exit 1; }

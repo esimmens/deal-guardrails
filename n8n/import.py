@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 """Import both workflows into the running n8n and publish them.
 
-The workflow JSON in this repo references the Slack credential by NAME only, so the files stay
-portable. n8n resolves credentials by id, not name, so this looks the id up from the running
-instance and injects it at import time. Create the credential first (UI, or `n8n
-import:credentials`) named exactly CRED_NAME.
+The workflow JSON in this repo references Slack credentials by NAME only, so the files stay
+portable. n8n resolves credentials by id, not name, so this looks each id up from the running
+instance and injects it at import time. Two credentials are expected, one per bot:
+
+  "Oriel Approvals bot"  the n8n app: approval cards, outcomes to the approver, reminders
+  "Oriel Deal Desk bot"  the intake app: the decision back to the requester, in the same
+                         conversation she used to submit
+
+Create them first (`n8n/credentials.py` from the env file, or the UI) with exactly those names.
 """
 from __future__ import annotations
 
@@ -14,7 +19,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CRED_NAME = "Oriel Approvals bot"
 WORKFLOWS = ["n8n/deal-card.workflow.json", "n8n/reminder-sweep.workflow.json"]
 
 
@@ -24,32 +28,40 @@ def compose(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess
     return subprocess.run(cmd, cwd=ROOT, input=stdin, capture_output=True, text=True)
 
 
-def credential_id(name: str) -> str | None:
+def credential_ids() -> dict[str, str]:
     r = compose("exec", "-T", "n8n", "sh", "-lc",
                 "n8n export:credentials --all --output=/tmp/c.json >/dev/null 2>&1; "
                 "cat /tmp/c.json; rm -f /tmp/c.json")
     try:
-        for c in json.loads(r.stdout):
-            if c.get("name") == name:
-                return c.get("id")
+        return {c["name"]: c["id"] for c in json.loads(r.stdout) if c.get("type") == "slackApi"}
     except Exception:
         print(r.stdout[:300], r.stderr[:300], file=sys.stderr)
-    return None
+        return {}
 
 
 def main() -> int:
-    cid = credential_id(CRED_NAME)
-    if not cid:
-        print(f"no credential named {CRED_NAME!r} in n8n; create it first", file=sys.stderr)
+    ids = credential_ids()
+    wanted = set()
+    for rel in WORKFLOWS:
+        for node in json.loads((ROOT / rel).read_text()).get("nodes", []):
+            name = ((node.get("credentials") or {}).get("slackApi") or {}).get("name")
+            if name:
+                wanted.add(name)
+    missing = sorted(wanted - set(ids))
+    if missing:
+        print(f"n8n has no Slack credential named {missing}; create it first "
+              f"(uv run python n8n/credentials.py)", file=sys.stderr)
         return 1
-    print(f"credential {CRED_NAME!r} -> {cid}")
+    for name in sorted(wanted):
+        print(f"credential {name!r} -> {ids[name]}")
     for rel in WORKFLOWS:
         wf = json.loads((ROOT / rel).read_text())
         linked = 0
         for node in wf.get("nodes", []):
             creds = node.get("credentials") or {}
             if "slackApi" in creds:
-                creds["slackApi"] = {"id": cid, "name": CRED_NAME}
+                name = creds["slackApi"]["name"]
+                creds["slackApi"] = {"id": ids[name], "name": name}
                 linked += 1
         print(f"  {rel}: linked {linked} Slack node(s)")
         compose("exec", "-T", "n8n", "sh", "-lc", "cat > /tmp/wf.json", stdin=json.dumps(wf))

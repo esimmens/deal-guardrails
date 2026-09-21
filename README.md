@@ -65,7 +65,8 @@ make push-agent             # pushes agent, tool and workflow to ElevenLabs, pin
 | Variable | What it is |
 |---|---|
 | `NGROK_AUTHTOKEN`, `NGROK_DOMAIN` | The reserved static domain that fronts Caddy |
-| `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | The n8n Slack app ("Oriel Approvals"); the ElevenAgents Slack app is connected in the ElevenLabs dashboard |
+| `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | The n8n Slack app ("Oriel Approvals"): approval cards and approver-facing outcomes |
+| `SLACK_INTAKE_BOT_TOKEN` | The intake Slack app ("Oriel Deal Desk"), a bring-your-own app connected in the ElevenLabs dashboard; n8n also posts the decision from it so the requester gets the answer in the conversation she asked in |
 | `ELEVENLABS_API_KEY` | For `push-agent` and the eval runner |
 | `OPENAI_API_KEY` | The non-Claude generator that writes eval scenario text |
 | `DG_TOOL_TOKEN` | Bearer the ElevenAgents tool sends to `POST /deals` |

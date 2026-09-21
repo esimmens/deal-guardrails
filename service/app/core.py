@@ -355,8 +355,9 @@ def record_decision(cur: Cursor, event: ApprovalEvent, settings: Settings, *, ac
     if requester.get("slack_user_id"):
         enqueue(cur, deal_id=deal["id"], kind="requester_dm", target={"slack_user_id": requester["slack_user_id"]},
                 payload={"text": msg, "deal_id": deal["deal_ref"], "status": new_status})
-    # No thread update into the intake channel. The requester is told by direct message above; posting
-    # the outcome back into a shared channel would put the deal and its approver in front of everyone.
+    # The requester_dm above is delivered by the INTAKE bot (n8n credential "Oriel Deal Desk bot"), so it
+    # lands in the same direct message she used to submit: one conversation, question and answer.
+    # Nothing is posted to any channel; a channel would put the deal and its approver in front of everyone.
     return {"recorded": True, "deal_id": deal["deal_ref"], "status": new_status, "approver": approver["full_name"],
             "role": gate_role, "decision": event.decision}
 

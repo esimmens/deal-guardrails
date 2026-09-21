@@ -7,7 +7,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ENVFILE=$( [ -f .env ] && echo .env || echo env )
-set -a; source <(grep -E '^[A-Za-z_0-9]+=' "$ENVFILE" | sed 's/[[:space:]]*#.*//'); set +a
+# Load KEY=VALUE lines only, comments stripped. An explicit export loop: `source <(...)` with
+# `set -a` loaded nothing when run from this Mac's shell, and the loop is easy to test.
+while IFS= read -r line; do export "$line"; done < <(grep -E '^[A-Za-z_0-9]+=' "$ENVFILE" | sed 's/[[:space:]]*#.*//')
 REQUESTER=${1:?usage: demo_submit.sh U_REQUESTER_SLACK_ID}
 # A fresh conversation id each run: two identical deals from one conversation are a duplicate,
 # which is the behaviour we want everywhere except a repeated demo.

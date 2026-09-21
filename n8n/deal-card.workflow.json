@@ -429,7 +429,7 @@
       ],
       "credentials": {
         "slackApi": {
-          "name": "Oriel Approvals bot"
+          "name": "Oriel Deal Desk bot"
         }
       }
     }

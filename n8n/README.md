@@ -52,16 +52,30 @@ docker compose --env-file env exec -T n8n n8n import:workflow --input=/n8n/remin
 Both files carry fixed workflow ids (`DGdealcard000001`, `DGremindersweep1`), so re-importing after an edit
 updates the existing workflow instead of creating a duplicate. The CLI import always leaves workflows inactive.
 
-Then create the Slack credential once, and link it with the importer:
+Then create the two Slack credentials once, and link them with the importer. Two bots do two jobs:
+
+| Credential name       | Token in the env file      | Used for                                                     |
+|-----------------------|----------------------------|--------------------------------------------------------------|
+| `Oriel Approvals bot` | `SLACK_BOT_TOKEN` (+ `SLACK_SIGNING_SECRET`) | the approval card, recorded/not-recorded to the approver, reminders |
+| `Oriel Deal Desk bot` | `SLACK_INTAKE_BOT_TOKEN`   | the decision back to the requester, in the DM she submitted in |
+
+The second one is the same Slack app the ElevenAgents intake runs on (bring-your-own app). A bot's DM
+to a user is always that one bot-to-user conversation, so posting the outcome from the intake bot puts
+question and answer in the same place without needing a channel id. The Signature Secret on the first
+is what verifies button clicks arriving at `/webhook-waiting-slack`; without it the Slack node answers
+401 to every click.
 
 1. Open http://localhost:5678 and finish the owner setup if this is a fresh instance.
-2. Create a credential of type **Slack API** named exactly `Oriel Approvals bot`:
-   **Access Token** = `SLACK_BOT_TOKEN` (the `xoxb-` bot token), **Signature Secret** =
-   `SLACK_SIGNING_SECRET`. The Signature Secret is what verifies button clicks arriving at
-   `/webhook-waiting-slack`; without it the Slack node answers 401 to every click.
-   In n8n 2.x there is no Credentials entry in the sidebar: open any Slack node in the `deal-card`
-   workflow and choose **Create new credential** in its credential dropdown.
-3. Run the importer, which links every Slack node to that credential by id and publishes both
+2. Create both credentials from the env file (no UI needed):
+
+```sh
+uv run python n8n/credentials.py
+```
+
+   Or by hand: in n8n 2.x there is no Credentials entry in the sidebar; open a Slack node in the
+   `deal-card` workflow and choose **Create new credential** in its dropdown, type **Slack API**, named
+   exactly as in the table.
+3. Run the importer, which links every Slack node to its credential by id and publishes both
    workflows:
 
 ```sh
