@@ -73,7 +73,7 @@ def regression_body(row: dict[str, Any], *, suite: str, folder_id: str | None,
         "tool_mock_config": {"mocking_strategy": "none"},  # the real service, every time
         "evaluation_model": JUDGE_MODEL,
         "simulated_user_model": SIM_USER_MODEL,
-        "dynamic_variables": {"integration__slack_user_id": slack_user_id},
+        "dynamic_variables": {"integration__slack_user_id": slack_user_id, "integration__slack_channel_id": "", "integration__slack_thread_ts": ""},
         "parent_folder_id": folder_id,
     }
 

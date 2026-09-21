@@ -100,6 +100,10 @@ def _error_signature(raw: str) -> str:
         return m.group(0)
     if "Request timed out" in raw:
         return "Request timed out"
+    if (m := re.search(r"missing integration__\w+", raw)):
+        return m.group(0) + " (header variable undefined in this conversation)"
+    if "Failed to prepare webhook parameters" in raw:
+        return "Failed to prepare webhook parameters (platform refused the model's parameters)"
     return raw.strip().splitlines()[0][:200] if raw.strip() else ""
 
 
