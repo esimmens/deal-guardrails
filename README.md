@@ -92,12 +92,15 @@ Numbers appear in `evals/results/published/` once a full run has been done, not 
 
 ## Status
 
-As of 2026-09-21. Verified: the policy engine, schema, audit chain, service and seed (94 tests);
-the agent, tool and workflow pushed to ElevenAgents; the full path test -> agent -> tunnel ->
-service -> Postgres, four times (DG-1042 to DG-1045); the agent running on Claude Sonnet 5 with
-the backup cascade disabled, and Anthropic prompt caching active on the platform. The evening of
-2026-09-20 was spent finding out why Claude produced no turns: Anthropic models are gated behind
-a paid ElevenLabs plan, and the platform's default fallback chain answered with Gemini so quietly
-that only the per-turn `producing_llm` field gave it away. Not yet verified: the n8n workflows
-against a live Slack workspace, and the evaluation suite beyond single runs. The record of what
-was found, including the wrong turns, is `docs/build-log.md`.
+As of 2026-09-21, night. Verified on the current version: policy engine, schema, audit chain, service
+and seed (95 tests); agent, tool and workflow pushed and drift-free; the full path test -> agent ->
+tunnel -> service -> Postgres with the requester's identity carried in platform-filled headers rather
+than anything the model emits; Claude Sonnet 5 producing every turn with the backup cascade disabled;
+Anthropic prompt caching active. Evaluated so far, one repeat each: 8 of 11 adversarial cases and 13 of
+16 valid regression runs passed both the judge and the database check, with zero under-escalations;
+the failures each traced to a cause that has since been fixed in the policy prose, the prompt, the tool
+schema or the test wording, and those fixes are confirmed by single-conversation canaries but not yet by
+a re-run of the affected scenarios. The night also cost two batches of credits to a free tunnel that
+dropped its session and to a header variable the tests did not define; both are recorded in
+`docs/build-log.md`, along with the operating rules that came out of it (`evals/README.md`). Not yet
+touched: the n8n workflows against a live Slack workspace, the held-out set, and repeats.
