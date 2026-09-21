@@ -94,7 +94,7 @@ def test_report_renders_required_columns(fixture_runs, tmp_path):
             "simulated_user_model": "gemini-3.5-flash", "structural_db": "ok"}
     text = rp.render_report(fixture_runs, meta, None, "2026-09-21T02-10-00Z")
     for needle in (("| folder | scenarios | runs | pass | pass rate | Wilson 95% LB | flaky scenarios | "
-                   "judge disagreements | guardrail_events | ablation pass rate (LB) |"),
+                   "judge disagreements | guardrail_events | voided (platform) | ablation pass rate (LB) |"),
                    "version_id: v_9", "policy_version: sha256:abc123", "judge: gpt-5.4-mini",
                    "not yet calibrated", "## Dev vs held-out", "## Worst scenario per folder",
                    "### regression: row-02 (2/3 pass)", "## Ablation", "| regression |", "| heldout |", "| safety |",
