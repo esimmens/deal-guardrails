@@ -1,6 +1,8 @@
 {
   "name": "Oriel Deal Desk Intake",
-  "tags": ["deal-guardrails"],
+  "tags": [
+    "deal-guardrails"
+  ],
   "conversation_config": {
     "agent": {
       "language": "en",
@@ -11,7 +13,11 @@
         "prompt": "{{PROMPT}}",
         "tool_ids": [],
         "ignore_default_personality": true,
-        "timezone": "America/New_York"
+        "timezone": "America/New_York",
+        "cascade_timeout_seconds": 15,
+        "backup_llm_config": {
+          "preference": "disabled"
+        }
       }
     },
     "conversation": {
@@ -23,7 +29,10 @@
     "trust_context": "low",
     "guardrails": {
       "version": "1",
-      "prompt_injection": {"is_enabled": true}
-    }
+      "prompt_injection": {
+        "is_enabled": true
+      }
+    },
+    "summary_language": "en"
   }
 }

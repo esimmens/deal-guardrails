@@ -43,7 +43,7 @@
     "confirmed_node": {
       "type": "override_agent",
       "label": "Confirmed",
-      "entry_behavior": "wait_for_user",
+      "entry_behavior": "auto",
       "position": {
         "x": -220,
         "y": 420
@@ -54,12 +54,12 @@
           "first_message": "{{confirmation_line}} {{receipt_summary}}"
         }
       },
-      "additional_prompt": "The request is on file with id {{deal_id}}. Answer questions about what happens next in one or two sentences. Never say it is approved. Never offer to approve, expedite, or contact approvers yourself."
+      "additional_prompt": "Your first message in this node must be exactly the following text, with nothing added before or after it: {{confirmation_line}} {{receipt_summary}} After that first message, answer follow-up questions in one or two sentences. The request is on file with id {{deal_id}}. Never say it is approved. Never offer to approve, expedite, or contact approvers yourself."
     },
     "failed_node": {
       "type": "override_agent",
       "label": "Submission failed",
-      "entry_behavior": "wait_for_user",
+      "entry_behavior": "auto",
       "position": {
         "x": 220,
         "y": 420
@@ -73,7 +73,7 @@
           "first_message": "The submission did not go through. No request exists and there is no reference number. Say retry and I will submit it again, or tell me to stop."
         }
       },
-      "additional_prompt": "The submission failed. There is no deal id. Never invent one. If the AE wants to retry, say nothing else; the retry happens automatically. If they want to stop, acknowledge in one sentence."
+      "additional_prompt": "Your first message in this node must be exactly: The submission did not go through. No request exists and there is no reference number. Say retry and I will submit it again, or tell me to stop. Then, if the AE asks whether it was submitted, say plainly that nothing was recorded and there is no reference number. Never invent an id. If the AE wants to retry, say nothing else; the retry happens automatically."
     },
     "end_node": {
       "type": "end",
