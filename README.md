@@ -59,6 +59,7 @@ make seed                   # Oriel Speech: 8 people, 10 accounts, 41 historical
 make test                   # policy properties, service, evals (offline parts)
 make verify-audit           # walks the chain; exit 0
 make tamper-demo            # edits one audit row as admin; verifier exits 1
+cp agent/ids.example.json agent/ids.json   # then put your ElevenLabs agent id in it
 make push-agent             # pushes agent, tool and workflow to ElevenLabs, pins a version
 ```
 
@@ -89,19 +90,41 @@ non-Claude model write the AE's message. Tests assert outcomes (a deal id was is
 confirmed node was reached, the row in Postgres carries the expected approvals), never only
 the tool call's parameters. A held-out set is hash-frozen. Results are reported per category
 with Wilson lower bounds, alongside an ablation with the policy stripped from the prompt.
-Numbers appear in `evals/results/published/` once a full run has been done, not before.
+
+### Results
+
+30 simulated conversations on the final agent version (2026-09-21), one run per scenario, run as
+ElevenAgents tests against the live agent, tunnel, service and database.
+
+| Suite | Runs | Postgres holds exactly the required approvers | Wilson 95% lower bound |
+|---|---:|---:|---:|
+| Safety (adversarial) | 11 | 11 | 0.74 |
+| Regression | 19 | 18 | 0.75 |
+| All | 30 | 29 | 0.83 |
+
+- **Zero under-escalations.** No run stored fewer approvers than policy requires. The one miss
+  (row-25) added the CRO to a deal at exactly 30% off, the inclusive upper bound of the Deal Desk
+  band: an extra reviewer, the safe direction.
+- **The adversarial set** covers a prompt injection inside a field, impersonation of an approver
+  with credential fishing, splitting a deal to stay under the CRO threshold, numbers that drift
+  between turns, a flipped yes/no answer, and gibberish.
+- **The LLM judge is reported, not trusted.** GPT-5.2 scores every run as well (the simulated user
+  is Gemini). Across the evaluation its verdict contradicted the database or its own rationale 7
+  times and caught nothing the database check missed, including two runs on this version it failed
+  on misreadings of the transcript. Calibrating it against hand labels (`evals/kappa.py`) is still to do.
+- **Excluded, not failed:** three runs whose test definitions left a required header variable
+  undefined, so the platform refused the tool call before the agent acted (re-run after the fix),
+  and three voided when the tunnel dropped.
+- **Not yet run:** the held-out set (its hash is in `evals/heldout.sha256`; the scenarios are kept
+  out of this repository) and repeat runs.
+- **Known blind spot:** a pass requires the right approver set, not every stored field. A run in
+  which the agent invents a value that does not change routing still passes. A field-by-field check
+  against the transcript is the next addition.
 
 ## Status
 
-As of 2026-09-21, night. Verified on the current version: policy engine, schema, audit chain, service
-and seed (95 tests); agent, tool and workflow pushed and drift-free; the full path test -> agent ->
-tunnel -> service -> Postgres with the requester's identity carried in platform-filled headers rather
-than anything the model emits; Claude Sonnet 5 producing every turn with the backup cascade disabled;
-Anthropic prompt caching active. Evaluated so far, one repeat each: 8 of 11 adversarial cases and 13 of
-16 valid regression runs passed both the judge and the database check, with zero under-escalations;
-the failures each traced to a cause that has since been fixed in the policy prose, the prompt, the tool
-schema or the test wording, and a re-run of the five affected scenarios on the current version passed
-every structural check. The night also cost two batches of credits to a free tunnel that
-dropped its session and to a header variable the tests did not define; both are recorded in
-`docs/build-log.md`, along with the operating rules that came out of it (`evals/README.md`). Not yet
-touched: the n8n workflows against a live Slack workspace, the held-out set, and repeats.
+As of 2026-09-22. Working end to end in a real Slack workspace: an AE opens a direct message with
+the intake app, the agent gathers the facts and submits, the approver gets a private card and clicks
+Approve, and the outcome posts back into the AE's own conversation. 97 automated tests cover the
+policy engine, the service and the eval tooling. Open: the held-out set, repeat runs, judge
+calibration against hand labels, and the field-level check above.

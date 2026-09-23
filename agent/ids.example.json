@@ -1,0 +1,7 @@
+{
+  "agent_id": "agent_REPLACE_WITH_YOUR_AGENT_ID",
+  "tool_id": null,
+  "tool_token_secret_id": null,
+  "version_id": null,
+  "note": "Copy to agent/ids.json (gitignored) and put the id of an agent in your ElevenLabs workspace in agent_id. agent/push.py creates the tool and the workspace secret on its first push and records tool_id, tool_token_secret_id and version_id here itself."
+}

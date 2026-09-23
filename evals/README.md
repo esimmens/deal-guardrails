@@ -31,4 +31,5 @@ uv run python evals/report.py evals/results/latest
 ```
 
 The held-out set (`scenarios/heldout.json`) is hash-frozen in `heldout.sha256`; `run.py` refuses to run it
-if the hash does not match, and it is run only once, at the end.
+if the hash does not match, and it is run only once, at the end. The scenarios themselves are kept out
+of this repository so they stay unseen; the hash is published so the set cannot change after the fact.

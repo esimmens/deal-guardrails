@@ -7,3 +7,13 @@ evals/results/
 !evals/results/published/
 docs/raw-take.mp4
 .DS_Store
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+# Kept locally, not published: account ids, the held-out eval set, working notes
+agent/ids.json
+evals/scenarios/test_ids.json
+evals/scenarios/heldout.json
+docs/build-log.md
+docs/video-plan.md
+docs/video/
